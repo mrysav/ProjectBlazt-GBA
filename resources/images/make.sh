@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Convert character sprites
-grit dangerous_dave.png -gt -gB4 -Mw4 -Mh2
+echo " - dangerous_dave.png"
+grit dangerous_dave.png -ftc -gt -gB8 -Mw2 -Mh2
 
 # TODO: other ones
