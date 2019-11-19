@@ -3,12 +3,12 @@
 
 //======================================================================
 //
-//	dangerous_dave, 64x32@4, 
+//	dangerous_dave, 64x32@8, 
 //	+ palette 256 entries, not compressed
-//	+ 32 tiles Metatiled by 4x2 not compressed
-//	Total size: 512 + 1024 = 1536
+//	+ 32 tiles Metatiled by 2x2 not compressed
+//	Total size: 512 + 2048 = 2560
 //
-//	Time-stamp: 2019-11-18, 22:22:06
+//	Time-stamp: 2019-11-18, 23:03:44
 //	Exported by Cearn's GBA Image Transmogrifier, v0.8.15
 //	( http://www.coranac.com/projects/#grit )
 //
@@ -17,8 +17,8 @@
 #ifndef GRIT_DANGEROUS_DAVE_H
 #define GRIT_DANGEROUS_DAVE_H
 
-#define dangerous_daveTilesLen 1024
-extern const unsigned int dangerous_daveTiles[256];
+#define dangerous_daveTilesLen 2048
+extern const unsigned int dangerous_daveTiles[512];
 
 #define dangerous_davePalLen 512
 extern const unsigned short dangerous_davePal[256];

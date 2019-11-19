@@ -1,6 +1,6 @@
 #include "gba.h"
 #include "input.h"
-#include "charsprites.h"
+#include "dangerous_dave.h"
 #include <string.h>
 
 ObjectAttributes oam_object_backbuffer[128];
@@ -44,12 +44,12 @@ void updateSpritePosition(HeroSprite* sprite)
 
     if (getKeyState(KEY_LEFT))
     {
-        sprite->facingRight = 0;
+        sprite->facingRight = 1;
         sprite->velX = -WALK_SPEED;
     }
     else if (getKeyState(KEY_RIGHT))
     {
-        sprite->facingRight = 1;
+        sprite->facingRight = 0;
         sprite->velX = WALK_SPEED;
     }
     else sprite->velX = 0;
@@ -99,8 +99,8 @@ void tickSpriteAnimation(HeroSprite* sprite, int frame)
     //update velocity for gravity
     if (isMidAir)
     {
-        sprite->firstAnimCycleFrame = 56;
-        sprite->animFrame = sprite->velY > 0 ? 1 : 0;
+        sprite->firstAnimCycleFrame = 32;
+        sprite->animFrame = 0;
     }
     else
     {
@@ -110,22 +110,17 @@ void tickSpriteAnimation(HeroSprite* sprite, int frame)
             sprite->animFrame = (++sprite->animFrame) % 3;
 
         }
-        else
-        {
-            sprite->firstAnimCycleFrame = 0;
-            sprite->animFrame = (++sprite->animFrame) % 4;
-        }
     }
 
-    spriteAttribs->attr2 = sprite->firstAnimCycleFrame + (sprite->animFrame * 8);    
+    spriteAttribs->attr2 = sprite->firstAnimCycleFrame + (sprite->animFrame * 8);
 
 }
 
 int main()
 {
 
-    memcpy(&MEM_TILE[4][0], charspritesTiles, charspritesTilesLen);
-    memcpy(MEM_PALETTE, charspritesPal, charspritesPalLen);
+    memcpy(&MEM_TILE[4][0], dangerous_daveTiles, dangerous_daveTilesLen);
+    memcpy(MEM_PALETTE, dangerous_davePal, dangerous_davePalLen);
 
     REG_DISPLAYCONTROL =  VIDEOMODE_0 | BACKGROUND_0 | ENABLE_OBJECTS | MAPPINGMODE_1D;
 
