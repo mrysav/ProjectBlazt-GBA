@@ -1,10 +1,9 @@
-#ifndef INPUT_H
-#define INPUT_H
+#pragma once
+
+#include <gba.h>
 
 unsigned short input_cur = 0x03FF;
 unsigned short input_prev = 0x03FF;
-
-#define REG_KEYINPUT  (* (volatile unsigned short*) 0x4000130)
 
 #define KEY_A        0x0001
 #define KEY_B        0x0002
@@ -40,5 +39,3 @@ unsigned short getKeyState(unsigned short key_code)
 {
     return !(key_code & (input_cur) );
 }
-
-#endif
