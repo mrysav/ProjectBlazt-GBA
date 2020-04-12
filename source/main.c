@@ -4,13 +4,14 @@
 
 // Game States
 #include "menu.h"
+#include "game.h"
 
 // Utilities
 #include "state.h"
 #include "display.h"
 #include "util.h"
 
-const GameState* GAME_STATES[] = { &MENU_STATE };
+const GameState* GAME_STATES[] = { &MENU_STATE, &GAME_STATE };
 
 void vsync()
 {

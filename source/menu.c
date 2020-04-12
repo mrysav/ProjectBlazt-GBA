@@ -22,6 +22,7 @@ State menu_processInput(uint16_t keys) {
 
     if(keys & KEY_A) {
         pressed = true;
+        return GAME;
     }
 
     return MENU;
