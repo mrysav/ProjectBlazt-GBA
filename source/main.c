@@ -33,7 +33,7 @@ int main()
         State nextState = state;
 
         scanKeys();
-        uint16_t keys = keysDown();
+        uint16_t keys = keysHeld();
 
         nextState = gState->processInput(keys);
 

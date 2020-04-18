@@ -25,6 +25,8 @@ typedef struct Player {
     Rect hitbox;
 } Player;
 
+void player_loadSprites();
+
 void player_init(Player* p, OBJATTR* attribs);
 
 void player_destroy(Player* player);

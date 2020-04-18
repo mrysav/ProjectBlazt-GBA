@@ -4,8 +4,9 @@
 //======================================================================
 //
 //	block_tiles, 256x128@8, 
+//	Transparent color : FF,00,E1
 //	+ palette 256 entries, not compressed
-//	+ 512 tiles Metatiled by 2x2 not compressed
+//	+ 512 tiles not compressed
 //	Total size: 512 + 32768 = 33280
 //
 //	Exported by Cearn's GBA Image Transmogrifier, v0.8.15

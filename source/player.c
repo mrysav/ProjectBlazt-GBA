@@ -29,16 +29,34 @@ const int_fast16_t walk_seq[WALK_SEQ_LEN] = {0, 1, 0, -1};
 #define HITBOX_HEIGHT 16
 #define HITBOX_OFF_Y 0
 
-void loadPlayerSpriteSheet() {
-    // TODO: MAP might not be right here
-    memcpy(&MAP[4][0], dangerous_daveTiles, dangerous_daveTilesLen);
-    memcpy(SPRITE_PALETTE, dangerous_davePal, dangerous_davePalLen);
+void player_loadSprites() {
+    dmaCopy(dangerous_davePal, SPRITE_PALETTE, dangerous_davePalLen);
+    dmaCopy(dangerous_daveTiles, SPRITE_GFX, dangerous_daveTilesLen);
 }
 
 void player_init(Player* p, OBJATTR* attribs) {
-    loadPlayerSpriteSheet();
-
     p->spriteAttribs = attribs;
+
+    /* set up the first attribute */
+    p->spriteAttribs->attr0 = 0 |             /* y coordinate */
+        (0 << 8) |          /* rendering mode */
+        (0 << 10) |         /* gfx mode */
+        (0 << 12) |         /* mosaic */
+        (1 << 13) |         /* color mode, 0:16, 1:256 */
+        (OBJ_SQUARE); /* shape */
+
+    /* set up the second attribute */
+    p->spriteAttribs->attr1 = 0 |             /* x coordinate */
+        (0 << 9) |          /* affine flag */
+        (0 << 12) |         /* horizontal flip flag */
+        (0 << 13) |         /* vertical flip flag */
+        (ATTR1_SIZE_16);  /* size */
+
+    /* setup the second attribute */
+    p->spriteAttribs->attr2 = 0 |   // tile index */
+        (0 << 10) | // priority */
+        (0 << 12);         // palette bank (only 16 color)*/
+
     p->firstFrame = 0;
     p->animFrame = 0;
     p->framesInAir = 0;
@@ -95,16 +113,9 @@ void player_tick(Player* player, int_fast16_t delay) {
         player->animFrame = 0;
     }
 
-    player->spriteAttribs->attr2 = player->firstFrame + (player->animFrame * 8);
+    // player->spriteAttribs->attr2 = player->firstFrame + (player->animFrame * 8);
 }
 
 void player_draw(Player* player, Rect* camera) {
-    // int_fast16_t x1 = player->position.x - camera->x;
-    // int_fast16_t y1 = player->position.y - camera->y;
 
-    // int_fast16_t spriteId = player->firstFrame + player->animFrame;
-    // int_fast16_t tx = spriteId % SHEET_WIDTH * SPRITE_WIDTH;
-    // int_fast16_t ty = spriteId / SHEET_WIDTH * SPRITE_HEIGHT;
-
-    // al_draw_bitmap_region(player_sheet, tx, ty, SPRITE_WIDTH, SPRITE_HEIGHT, x1, y1, 0);
 }

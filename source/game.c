@@ -9,8 +9,9 @@
 // Main tile palette
 #include "block_tiles.h"
 
-// Level 1 map
+// Maps
 #include "sky_map_1.h"
+#include "random_tiles_map.h"
 
 // Utilities
 #include "background.h"
@@ -58,34 +59,17 @@ int_fast16_t player_x_offset;
 int_fast16_t player_y_offset;
 Rect camera = {0};
 
+uint16_t bg_scroll_x = 0;
+uint16_t bg_scroll_y = 0;
+
 int_fast16_t numEnem = 0;
 
 OBJATTR oam_object_backbuffer[128];
 
-/* return a pointer to one of the 4 character blocks (0-3) */
-volatile unsigned short* char_block(unsigned long block) {
-    /* they are each 16K big */
-    return (volatile unsigned short*) (0x6000000 + (block * 0x4000));
-}
-
-/* return a pointer to one of the 32 screen blocks (0-31) */
-volatile unsigned short* screen_block(unsigned long block) {
-    /* they are each 2K big */
-    return (volatile unsigned short*) (0x6000000 + (block * 0x800));
-}
-
 void loadPalette() {
-    /* load the palette from the image into palette memory*/
-    for (int i = 0; i < block_tilesPalLen; i++) {
-        BG_PALETTE[i] = block_tilesPal[i];
-    }
-
-    /* load the image into char block 0 (16 bits at a time) */
-    volatile unsigned short* dest = char_block(0);
-    unsigned short* image = (unsigned short*) block_tilesTiles;
-    for (int i = 0; i < block_tilesTilesLen; i++) {
-        dest[i] = image[i];
-    }
+    /* load the palette from the image into palette memory via dma */
+    dmaCopy(block_tilesPal, BG_PALETTE, block_tilesPalLen);
+    dmaCopy(block_tilesTiles, CHAR_BASE_BLOCK(0), block_tilesTilesLen);
 
     /* set all control the bits in this register */
     REG_BG0CNT = 0        |  /* priority, 0 is highest, 3 is lowest */
@@ -94,14 +78,28 @@ void loadPalette() {
         (BG_256_COLOR)    |  /* color mode, 0 is 16 colors, 1 is 256 colors */
         (SCREEN_BASE(16)) |  /* the screen block the tile data is stored in */
         (BG_WRAP)         |  /* wrapping flag */
-        (BG_SIZE_1);         /* bg size, 0 is 256x256 */
+        (BG_SIZE_1);         /* bg size, 1 is 512x256 */
 }
 
 void loadMap() {
     /* load the tile data into screen block 16 */
-    volatile unsigned short* dest = screen_block(16);
-    for (int i = 0; i < (sky_map_1_width * sky_map_1_height); i++) {
-        dest[i] = sky_map_1[i];
+    uint16_t* dest = SCREEN_BASE_BLOCK(16);
+    for (int i = 0; i < (random_tiles_map_width * random_tiles_map_height); i++) {
+        dest[i] = random_tiles_map[i];
+    }
+
+    // Uncomment to dump the palette to the screen
+    // uint16_t maplen = random_tiles_map_width * random_tiles_map_height;
+    // for (uint16_t i = 0; i < maplen; i++) {
+    //     dest[i] = i % block_tilesTilesLen;
+
+    // }
+}
+
+void clear_sprites() {
+    for(int_fast16_t i = 0; i < 128; i++) {
+        OAM[i].attr0 = SCREEN_HEIGHT;
+        OAM[i].attr1 = SCREEN_WIDTH;
     }
 }
 
@@ -109,6 +107,10 @@ void game_loadResources()
 {
     loadPalette();
     loadMap();
+
+    player_loadSprites();
+
+    clear_sprites();
 
     player_init(&player, &oam_object_backbuffer[0]);
 
@@ -224,6 +226,19 @@ State game_processInput(uint16_t keys)
         return MENU;
     }
 
+    if (keys & KEY_UP) {
+        bg_scroll_y--;
+    }
+    if (keys & KEY_DOWN) {
+        bg_scroll_y++;
+    }
+    if (keys & KEY_RIGHT) {
+        bg_scroll_x++;
+    }
+    if (keys & KEY_LEFT) {
+        bg_scroll_x--;
+    }
+
     int_fast16_t xB = 0;
     int_fast16_t xvel = 0;
     if (keys & KEY_RIGHT)
@@ -322,6 +337,12 @@ void game_updateFrame()
     background_draw_sky();
 
     OAM[0] = oam_object_backbuffer[0];
+
+    REG_BG0HOFS = bg_scroll_x;
+    REG_BG0VOFS = bg_scroll_y;
+
+    //bg_scroll_x = 0;
+    //bg_scroll_y = 0;
 
     // player_draw(&player, &camera);
 
