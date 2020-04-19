@@ -21,7 +21,7 @@ void vsync()
 
 int main()
 {
-    REG_DISPCNT =  MODE_0 | BG0_ON | OBJ_ON | OBJ_1D_MAP;
+    REG_DISPCNT =  MODE_0 | BG0_ON | BG1_ON | BG2_ON | OBJ_ON | OBJ_1D_MAP;
 
     State state = MENU;
     GAME_STATES[(int)state]->loadResources();

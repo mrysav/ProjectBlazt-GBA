@@ -7,11 +7,11 @@
 #include "game.h"
 
 // Main tile palette
-#include "block_tiles.h"
+#include "block_tiles_1.h"
+#include "block_tiles_2.h"
 
 // Maps
-#include "sky_map_1.h"
-#include "random_tiles_map.h"
+#include "level_1.h"
 
 // Utilities
 #include "background.h"
@@ -68,32 +68,42 @@ OBJATTR oam_object_backbuffer[128];
 
 void loadPalette() {
     /* load the palette from the image into palette memory via dma */
-    dmaCopy(block_tilesPal, BG_PALETTE, block_tilesPalLen);
-    dmaCopy(block_tilesTiles, CHAR_BASE_BLOCK(0), block_tilesTilesLen);
+    dmaCopy(block_tiles_1Pal, BG_PALETTE, block_tiles_1PalLen);
+    dmaCopy(block_tiles_1Tiles, CHAR_BASE_BLOCK(0), block_tiles_1TilesLen);
+    // dmaCopy(block_tiles_2Pal, BG_PALETTE + block_tiles_1PalLen, block_tiles_2PalLen);
+    dmaCopy(block_tiles_2Tiles, CHAR_BASE_BLOCK(1), block_tiles_2TilesLen);
 
     /* set all control the bits in this register */
-    REG_BG0CNT = 0        |  /* priority, 0 is highest, 3 is lowest */
+    REG_BG0CNT = 3        |  /* priority, 0 is highest, 3 is lowest */
+        (CHAR_BASE(0))    |  /* the char block the image data is stored in */
+        (BG_MOSAIC)       |  /* the mosaic flag */
+        (BG_256_COLOR)    |  /* color mode, 0 is 16 colors, 1 is 256 colors */
+        (SCREEN_BASE(8))  |  /* the screen block the tile data is stored in */
+        (BG_WRAP)         |  /* wrapping flag */
+        (BG_SIZE_3);         /* bg size 3 is 512x512 */
+
+    REG_BG1CNT = 2        |  /* priority, 0 is highest, 3 is lowest */
         (CHAR_BASE(0))    |  /* the char block the image data is stored in */
         (BG_MOSAIC)       |  /* the mosaic flag */
         (BG_256_COLOR)    |  /* color mode, 0 is 16 colors, 1 is 256 colors */
         (SCREEN_BASE(16)) |  /* the screen block the tile data is stored in */
         (BG_WRAP)         |  /* wrapping flag */
-        (BG_SIZE_1);         /* bg size, 1 is 512x256 */
+        (BG_SIZE_3);         /* bg size 3 is 512x512 */
+
+    REG_BG2CNT = 1        |  /* priority, 0 is highest, 3 is lowest */
+        (CHAR_BASE(0))    |  /* the char block the image data is stored in */
+        (BG_MOSAIC)       |  /* the mosaic flag */
+        (BG_256_COLOR)    |  /* color mode, 0 is 16 colors, 1 is 256 colors */
+        (SCREEN_BASE(24)) |  /* the screen block the tile data is stored in */
+        (BG_WRAP)         |  /* wrapping flag */
+        (BG_SIZE_3);         /* bg size 3 is 512x512 */
 }
 
 void loadMap() {
     /* load the tile data into screen block 16 */
-    uint16_t* dest = SCREEN_BASE_BLOCK(16);
-    for (int i = 0; i < (random_tiles_map_width * random_tiles_map_height); i++) {
-        dest[i] = random_tiles_map[i];
-    }
-
-    // Uncomment to dump the palette to the screen
-    // uint16_t maplen = random_tiles_map_width * random_tiles_map_height;
-    // for (uint16_t i = 0; i < maplen; i++) {
-    //     dest[i] = i % block_tilesTilesLen;
-
-    // }
+    dmaCopy(LEVEL_1_BG0, SCREEN_BASE_BLOCK(8), LEVEL_1_LEN);
+    dmaCopy(LEVEL_1_BG1, SCREEN_BASE_BLOCK(16), LEVEL_1_LEN);
+    dmaCopy(LEVEL_1_BG2, SCREEN_BASE_BLOCK(24), LEVEL_1_LEN);
 }
 
 void clear_sprites() {
@@ -133,6 +143,7 @@ void game_loadResources()
 void game_unloadResources()
 {
     player_destroy(&player);
+    clear_sprites();
 }
 
 // void spawnEnemy() {
@@ -340,6 +351,12 @@ void game_updateFrame()
 
     REG_BG0HOFS = bg_scroll_x;
     REG_BG0VOFS = bg_scroll_y;
+
+    REG_BG1HOFS = bg_scroll_x;
+    REG_BG1VOFS = bg_scroll_y;
+
+    REG_BG2HOFS = bg_scroll_x;
+    REG_BG2VOFS = bg_scroll_y;
 
     //bg_scroll_x = 0;
     //bg_scroll_y = 0;

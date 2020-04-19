@@ -93,27 +93,27 @@ void player_setPosition(Player* this, int_fast16_t x, int_fast16_t y) {
 
 void player_tick(Player* player, int_fast16_t delay) {
     // only animate once every 8th frame
-    if ((delay % 8) > 0) {
+    if ((delay % 16) > 0) {
         return;
     }
 
     static int_fast16_t anim_seq;
 
     if (player->isMoving) {
-        if (player->isJumping) {
-            player->firstFrame = player->facingLeft ? JUMPING_LEFT : JUMPING_RIGHT;
-            player->animFrame = 0;
-        } else {
+        // if (player->isJumping) {
+        //     player->firstFrame = player->facingLeft ? JUMPING_LEFT : JUMPING_RIGHT;
+        //     player->animFrame = 0;
+        // } else {
             player->firstFrame = player->facingLeft ? WALKING_LEFT : WALKING_RIGHT;
             anim_seq = ++anim_seq % WALK_SEQ_LEN;
             player->animFrame = walk_seq[anim_seq];
-        }
+        // }
     } else {
         player->firstFrame = player->facingLeft ? STANDING_LEFT : STANDING_RIGHT;
         player->animFrame = 0;
     }
 
-    // player->spriteAttribs->attr2 = player->firstFrame + (player->animFrame * 8);
+    player->spriteAttribs->attr2 = player->firstFrame + (player->animFrame * 8);
 }
 
 void player_draw(Player* player, Rect* camera) {

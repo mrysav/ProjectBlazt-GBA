@@ -3,7 +3,7 @@
 GRN="\e[32m"
 NC="\e[0m"
 
-MAKE_HOME="$(dirname "$0")"
+MAKE_HOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 RSC_HOME="$MAKE_HOME/resources/"
 # SRC_HOME="$MAKE_HOME/source/"
 
