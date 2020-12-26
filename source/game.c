@@ -71,57 +71,73 @@ void loadPalette() {
     dmaCopy(block_tiles_reducedTiles, CHAR_BASE_BLOCK(0), block_tiles_reducedTilesLen);
 
     /* set all control the bits in this register */
-    REG_BG0CNT = 0        |  /* priority, 0 is highest, 3 is lowest */
+    REG_BG0CNT = 2        |  /* priority, 0 is highest, 3 is lowest */
         (CHAR_BASE(0))    |  /* the char block the image data is stored in */
         (BG_MOSAIC)       |  /* the mosaic flag */
         (BG_256_COLOR)    |  /* color mode, 0 is 16 colors, 1 is 256 colors */
         (SCREEN_BASE(8))  |  /* the screen block the tile data is stored in */
         (BG_WRAP)         |  /* wrapping flag */
-        (BG_SIZE_0);         /* bg size 3 is 512x256 */
+        (BG_SIZE_3);         /* bg size 3 is 512x512 */
 
-    // REG_BG1CNT = 1        |  /* priority, 0 is highest, 3 is lowest */
-    //     (CHAR_BASE(0))    |  /* the char block the image data is stored in */
-    //     (BG_MOSAIC)       |  /* the mosaic flag */
-    //     (BG_256_COLOR)    |  /* color mode, 0 is 16 colors, 1 is 256 colors */
-    //     (SCREEN_BASE(16)) |  /* the screen block the tile data is stored in */
-    //     (BG_WRAP)         |  /* wrapping flag */
-    //     (BG_SIZE_1);         /* bg size 3 is 512x256 */
+    REG_BG1CNT = 1        |  /* priority, 0 is highest, 3 is lowest */
+        (CHAR_BASE(0))    |  /* the char block the image data is stored in */
+        (BG_MOSAIC)       |  /* the mosaic flag */
+        (BG_256_COLOR)    |  /* color mode, 0 is 16 colors, 1 is 256 colors */
+        (SCREEN_BASE(12)) |  /* the screen block the tile data is stored in */
+        (BG_WRAP)         |  /* wrapping flag */
+        (BG_SIZE_3);         /* bg size 3 is 512x512 */
 
-    // REG_BG2CNT = 2        |  /* priority, 0 is highest, 3 is lowest */
-    //     (CHAR_BASE(0))    |  /* the char block the image data is stored in */
-    //     (BG_MOSAIC)       |  /* the mosaic flag */
-    //     (BG_256_COLOR)    |  /* color mode, 0 is 16 colors, 1 is 256 colors */
-    //     (SCREEN_BASE(24)) |  /* the screen block the tile data is stored in */
-    //     (BG_WRAP)         |  /* wrapping flag */
-    //     (BG_SIZE_1);         /* bg size 3 is 512x256 */
+    REG_BG2CNT = 0        |  /* priority, 0 is highest, 3 is lowest */
+        (CHAR_BASE(0))    |  /* the char block the image data is stored in */
+        (BG_MOSAIC)       |  /* the mosaic flag */
+        (BG_256_COLOR)    |  /* color mode, 0 is 16 colors, 1 is 256 colors */
+        (SCREEN_BASE(16)) |  /* the screen block the tile data is stored in */
+        (BG_WRAP)         |  /* wrapping flag */
+        (BG_SIZE_3);         /* bg size 3 is 512x512 */
 }
 
-void loadMap() {
-    /* load the tile data into screen block 16 */
-    // dmaCopy(LEVEL_1_BG0, SCREEN_BASE_BLOCK(8), LEVEL_1_LEN);
-    // dmaCopy(LEVEL_1_BG1, SCREEN_BASE_BLOCK(16), LEVEL_1_LEN);
-    // dmaCopy(LEVEL_1_BG2, SCREEN_BASE_BLOCK(24), LEVEL_1_LEN);
+/*!
+ * Get the screen entry index for a tile-coord pair.
+ * This is the fast (and possibly unsafe) way.
+ * Lifted from:
+ * https://www.coranac.com/tonc/text/regbg.htm
+ *  \param bgcnt    Control flags for this background (to find its size)
+ */
+uint se_index_fast(uint tx, uint ty, u16 bgcnt)
+{
+    uint n= tx + ty*32;
+    if(tx >= 32)
+        n += 0x03E0; // Size of one screenblock (in tiles) - Size of one row of tiles (1024-32)
+    if(ty >= 32 && (bgcnt&BG_SIZE_3)==BG_SIZE_3)
+        n += 0x0400; // Size of one screenblock (1024)
+    return n;
+}
 
-    u16* dest = SCREEN_BASE_BLOCK(8);
-    u16 basedest = 0;
+/*!
+ * Paints a single layer of 16x16 tiles to memory.
+ * \param base_sb Base screenblock entry to start painting at.
+ * \param bgcnt Background control register of the background you're painting to.
+ * \param tileset Array containing the reduced tiles to paint.
+ * \param tiles The actual map data that references the tileset.
+ * \param height The height of the map (in 16x16 tiles)
+ * \param width The width of the map (in 16x16 tiles)
+ */
+void load_layer(u16* base_sb, u16 bgcnt, u16* tileset, u16* tiles, uint height, uint width) {
+    for (uint y = 0; y < height; y++) {
+        for (uint x = 0; x < width; x++) {
 
-    const uint16_t SCREEN_W = 32;
+            uint screenblock = se_index_fast(x*2, y*2, bgcnt);
+            u16* dest = base_sb + screenblock;
 
-    for (int y = 0; y < LEVEL_1_HEIGHT; y++) {
-        for (int x = 0; x < LEVEL_1_WIDTH; x++) {
-            uint16_t tile = LEVEL_1_BG1[y * LEVEL_1_WIDTH + x];
-            uint16_t base_idx = tile*4;
-            for (int i = 0; i < 2; i++) {
-                uint16_t o1 = block_tiles_reducedMetaTiles[base_idx+i];
-                uint16_t o2 = block_tiles_reducedMetaTiles[base_idx+i+2];
+            u16 tile = tiles[y * width + x];
+            u16 base_idx = tile*4;
+            for (uint i = 0; i < 2; i++) {
+                u16 o1 = tileset[base_idx+i];
+                u16 o2 = tileset[base_idx+i+2];
                 dest[i] = o1;
-                dest[LEVEL_1_WIDTH*2+i] = o2;
+                dest[32+i] = o2;
             }
-            basedest += 2;
-            dest += 2;
         }
-        basedest += (LEVEL_1_WIDTH * 2);
-        dest += (LEVEL_1_WIDTH * 2);
     }
 }
 
@@ -134,8 +150,18 @@ void clear_sprites() {
 
 void game_loadResources()
 {
+    // Set the right display mode
+    REG_DISPCNT =  MODE_0 | BG0_ON | BG1_ON | BG2_ON | OBJ_ON | OBJ_1D_MAP;
+
     loadPalette();
-    loadMap();
+
+
+    //loadMap();
+    load_layer(SCREEN_BASE_BLOCK(8), REG_BG0CNT, block_tiles_reducedMetaTiles,
+               LEVEL_1_BG0, LEVEL_1_HEIGHT, LEVEL_1_WIDTH);
+
+    load_layer(SCREEN_BASE_BLOCK(12), REG_BG1CNT, block_tiles_reducedMetaTiles,
+               LEVEL_1_BG1, LEVEL_1_HEIGHT, LEVEL_1_WIDTH);
 
     player_loadSprites();
 
@@ -257,10 +283,10 @@ State game_processInput(uint16_t keys)
     }
 
     if (keys & KEY_UP) {
-        bg_scroll_y--;
+        bg_scroll_y-=4;
     }
     if (keys & KEY_DOWN) {
-        bg_scroll_y++;
+        bg_scroll_y+=4;
     }
     if (keys & KEY_RIGHT) {
         bg_scroll_x+=4;
