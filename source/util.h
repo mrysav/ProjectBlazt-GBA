@@ -3,6 +3,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+// Makes life easier. If you're like me and have trouble reading
+// excessive defines... my bad.
 #define uint unsigned int
 
 #define max(a,b) \
@@ -16,8 +18,8 @@
      _a < _b ? _a : _b; })
 
 typedef struct Vec {
-    int_fast16_t x;
-    int_fast16_t y;
+    u16 x;
+    u16 y;
 } Vec;
 
 typedef struct Rect {

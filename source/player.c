@@ -17,12 +17,6 @@ const int_fast16_t walk_seq[WALK_SEQ_LEN] = {0, 1, 0, -1};
 #define STANDING_LEFT 48
 #define WALKING_LEFT 48
 
-// Spritesheet information
-#define SPRITE_HEIGHT 16
-#define SPRITE_WIDTH 16
-#define SHEET_HEIGHT 2
-#define SHEET_WIDTH 4
-
 // Hitbox info
 #define HITBOX_WIDTH 10
 #define HITBOX_OFF_X 3
@@ -38,15 +32,15 @@ void player_init(Player* p, OBJATTR* attribs) {
     p->spriteAttribs = attribs;
 
     /* set up the first attribute */
-    p->spriteAttribs->attr0 = 0 |             /* y coordinate */
-        (0 << 8) |          /* rendering mode */
-        (0 << 10) |         /* gfx mode */
-        (0 << 12) |         /* mosaic */
-        (1 << 13) |         /* color mode, 0:16, 1:256 */
-        (OBJ_SQUARE); /* shape */
+    p->spriteAttribs->attr0 = CENTER_PLAYER_SCREEN_Y | /* y coordinate */
+        (0 << 8) |                /* rendering mode */
+        (0 << 10) |               /* gfx mode */
+        (0 << 12) |               /* mosaic */
+        (1 << 13) |               /* color mode, 0:16, 1:256 */
+        (OBJ_SQUARE);             /* shape */
 
     /* set up the second attribute */
-    p->spriteAttribs->attr1 = 0 |             /* x coordinate */
+    p->spriteAttribs->attr1 = CENTER_PLAYER_SCREEN_X | /* x coordinate */
         (0 << 9) |          /* affine flag */
         (0 << 12) |         /* horizontal flip flag */
         (0 << 13) |         /* vertical flip flag */
@@ -116,6 +110,19 @@ void player_tick(Player* player, int_fast16_t delay) {
     player->spriteAttribs->attr2 = player->firstFrame + (player->animFrame * 8);
 }
 
-void player_draw(Player* player, Rect* camera) {
+Vec player_getScreenPos(Player* this) {
+    Vec vec;
+    // Bitwise AND to get the lowest 8 bits
+    vec.y = this->spriteAttribs->attr0 & 0x00FF;
+    // This attribute uses the lower 9 bits
+    vec.x = this->spriteAttribs->attr1 & 0x01FF;
+    return vec;
+}
 
+void player_setScreenX(Player* this, u16 x) {
+    this->spriteAttribs->attr1 = (this->spriteAttribs->attr1 & 0xFE00) | (0x01FF & x);
+}
+
+void player_setScreenY(Player* this, u16 y) {
+    this->spriteAttribs->attr0 = (this->spriteAttribs->attr0 & 0xFF00) | (0x00FF & y);
 }

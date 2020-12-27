@@ -54,6 +54,8 @@ uint_fast16_t max_draw_x;
 uint_fast16_t max_draw_y;
 uint_fast16_t max_move_x;
 uint_fast16_t max_move_y;
+u16 max_scroll_x;
+u16 max_scroll_y;
 int_fast16_t player_x_offset;
 int_fast16_t player_y_offset;
 Rect camera = {0};
@@ -169,6 +171,9 @@ void game_loadResources()
 
     player_init(&player, &oam_object_backbuffer[0]);
 
+    max_scroll_x = LEVEL_1_WIDTH * 2 * 8 - SCREEN_WIDTH;
+    max_scroll_y = LEVEL_1_HEIGHT * 2 * 8 - SCREEN_HEIGHT;
+
     max_draw_x = map_total_width + MAX_DRAW;
     max_draw_y = map_total_height + MAX_DRAW;
 
@@ -267,6 +272,56 @@ gravdata calc_collide(int_fast16_t xvel, int_fast16_t xedge, int_fast16_t x, int
     return res;
 }
 
+void doPlayerMove(u16 left, u16 top, u16 right, u16 down) {
+    Vec p_screenp = player_getScreenPos(&player);
+
+    if (left > 0) {
+        if (p_screenp.x > CENTER_PLAYER_SCREEN_X) {
+            p_screenp.x = max(p_screenp.x - left, CENTER_PLAYER_SCREEN_X);
+        } else if (bg_scroll_x > 0) {
+            bg_scroll_x = bg_scroll_x - min(bg_scroll_x, left);
+        } else {
+            p_screenp.x = p_screenp.x - min(p_screenp.x, left);
+        }
+    }
+
+    if (top > 0) {
+        if (p_screenp.y > CENTER_PLAYER_SCREEN_Y) {
+            p_screenp.y = max(p_screenp.y - top, CENTER_PLAYER_SCREEN_Y);
+        }
+        else if (bg_scroll_y > 0) {
+            bg_scroll_y = bg_scroll_y - min(bg_scroll_y, top);
+        } else {
+            p_screenp.y = p_screenp.y - min(p_screenp.y, top);
+        }
+    }
+
+    if (right > 0) {
+        if (bg_scroll_x == 0 && p_screenp.x < CENTER_PLAYER_SCREEN_X) {
+            p_screenp.x = min(p_screenp.x + right, CENTER_PLAYER_SCREEN_X);
+        }
+        else if (bg_scroll_x < max_scroll_x) {
+            bg_scroll_x = min(bg_scroll_x + right, max_scroll_x);
+        } else if (bg_scroll_x == max_scroll_x) {
+            p_screenp.x = min(MAX_PLAYER_SCREEN_X, p_screenp.x + right);
+        }
+    }
+
+    if (down > 0) {
+        if (bg_scroll_y == 0 && p_screenp.y < CENTER_PLAYER_SCREEN_Y) {
+            p_screenp.y = min(p_screenp.y + down, CENTER_PLAYER_SCREEN_Y);
+        }
+        else if (bg_scroll_y < max_scroll_y) {
+            bg_scroll_y = min(bg_scroll_y + down, max_scroll_y);
+        } else if (bg_scroll_y == max_scroll_y) {
+            p_screenp.y = min(MAX_PLAYER_SCREEN_Y, p_screenp.y + down);
+        }
+    }
+
+    player_setScreenX(&player, p_screenp.x);
+    player_setScreenY(&player, p_screenp.y);
+}
+
 State game_processInput(uint16_t keys)
 {
     static int_fast16_t delay;
@@ -282,17 +337,25 @@ State game_processInput(uint16_t keys)
         return MENU;
     }
 
+    Vec screenPos = player_getScreenPos(&player);
+
     if (keys & KEY_UP) {
-        bg_scroll_y-=4;
+        // bg_scroll_y = max(0, bg_scroll_y-4);
+        // player_setScreenY(&player, screenPos.y - min(1, screenPos.y));
+        doPlayerMove(0, 4, 0, 0);
     }
     if (keys & KEY_DOWN) {
-        bg_scroll_y+=4;
+        // bg_scroll_y = min(max_scroll_y, bg_scroll_y+4);
+        // player_setScreenY(&player, screenPos.y + 1);
+        doPlayerMove(0, 0, 0, 4);
     }
     if (keys & KEY_RIGHT) {
-        bg_scroll_x+=4;
+        // bg_scroll_x = min(max_scroll_x, bg_scroll_x+4);
+        doPlayerMove(0, 0, 4, 0);
     }
     if (keys & KEY_LEFT) {
-        bg_scroll_x-=4;
+        // bg_scroll_x = max(0, bg_scroll_x-4);
+        doPlayerMove(4, 0, 0, 0);
     }
 
     int_fast16_t xB = 0;
