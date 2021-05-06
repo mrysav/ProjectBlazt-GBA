@@ -6,21 +6,24 @@
 
 #include "menu.h"
 #include "state.h"
-#include "background.h"
 
 bool pressed = false;
 
-void menu_loadResources() {
+void menu_loadResources()
+{
     // TODO: Load text?
 }
 
-void menu_unloadResources() {
+void menu_unloadResources()
+{
     // maybe unneeded?
 }
 
-State menu_processInput(uint16_t keys) {
+State menu_processInput(uint16_t keys)
+{
 
-    if(keys & KEY_A) {
+    if (keys & KEY_A)
+    {
         pressed = true;
         return GAME;
     }
@@ -28,15 +31,9 @@ State menu_processInput(uint16_t keys) {
     return MENU;
 }
 
-void menu_updateFrame() {
-
-    if (!pressed) {
-        background_draw_black();
-    } else {
-        background_draw_sky();
-    }
-
+void menu_updateFrame()
+{
     return;
 }
 
-const GameState MENU_STATE = { &menu_loadResources, &menu_processInput, &menu_updateFrame, &menu_unloadResources };
+const GameState MENU_STATE = {&menu_loadResources, &menu_processInput, &menu_updateFrame, &menu_unloadResources};

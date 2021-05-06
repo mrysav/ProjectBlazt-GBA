@@ -18,15 +18,15 @@
      _a < _b ? _a : _b; })
 
 typedef struct Vec {
-    u16 x;
-    u16 y;
+    int x;
+    int y;
 } Vec;
 
 typedef struct Rect {
-    int_fast16_t x;
-    int_fast16_t y;
-    int_fast16_t width;
-    int_fast16_t height;
+    int x;
+    int y;
+    int width;
+    int height;
 } Rect;
 
 bool intersects(Rect* rect1, Rect* rect2);
@@ -35,9 +35,6 @@ bool intersects(Rect* rect1, Rect* rect2);
 typedef struct gravdata {
     bool hit_top;
     bool hit_floor;
-    int_fast16_t xdist;
-    int_fast16_t ydist;
+    int xdist;
+    int ydist;
 } gravdata;
-
-// TODO: ewwwwwwwww
-typedef gravdata (*jumpfunc) (int_fast16_t xvel, int_fast16_t xedge, int_fast16_t x, int_fast16_t width, int_fast16_t yvel, int_fast16_t yedge, int_fast16_t y, int_fast16_t height);
