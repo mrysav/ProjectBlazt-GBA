@@ -46,9 +46,6 @@ uint max_scroll_y;
 
 Rect camera = {-CENTER_PLAYER_SCREEN_X, -CENTER_PLAYER_SCREEN_Y, SCREEN_WIDTH, SCREEN_HEIGHT};
 
-uint16_t bg_scroll_x = 0;
-uint16_t bg_scroll_y = 0;
-
 int numEnem = 0;
 
 OBJATTR oam_object_backbuffer[128];
