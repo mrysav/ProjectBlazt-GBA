@@ -1,9 +1,9 @@
 
-//{{BLOCK(block_tiles_reduced)
+//{{BLOCK(im_bg_basic)
 
 //======================================================================
 //
-//	block_tiles_reduced, 256x256@8, 
+//	im_bg_basic, 256x256@8, 
 //	Transparent color : FF,00,E1
 //	+ palette 256 entries, not compressed
 //	+ 13 tiles (t|f reduced) not compressed
@@ -11,12 +11,13 @@
 //	Metatiled by 2x2
 //	Total size: 512 + 832 + 64 + 512 = 1920
 //
-//	Exported by Cearn's GBA Image Transmogrifier, v0.8.15
+//	Time-stamp: 2021-07-01, 22:45:02
+//	Exported by Cearn's GBA Image Transmogrifier, v0.8.16
 //	( http://www.coranac.com/projects/#grit )
 //
 //======================================================================
 
-const unsigned int block_tiles_reducedTiles[208] __attribute__((aligned(4))) __attribute__((visibility("hidden")))=
+const unsigned int im_bg_basicTiles[208] __attribute__((aligned(4))) __attribute__((visibility("hidden")))=
 {
 	0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,
 	0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,0x00000000,
@@ -49,7 +50,7 @@ const unsigned int block_tiles_reducedTiles[208] __attribute__((aligned(4))) __a
 	0x03030303,0x03030303,0x03030303,0x03030303,0x03030303,0x03030303,0x03030303,0x03030303,
 };
 
-const unsigned short block_tiles_reducedMetaTiles[32] __attribute__((aligned(4))) __attribute__((visibility("hidden")))=
+const unsigned short im_bg_basicMetaTiles[32] __attribute__((aligned(4))) __attribute__((visibility("hidden")))=
 {
 	0x0000,0x0000,0x0000,0x0000,0x0001,0x0002,0x0003,0x0003,
 	0x0004,0x0004,0x0004,0x0004,0x0005,0x0006,0x0007,0x0008,
@@ -57,7 +58,7 @@ const unsigned short block_tiles_reducedMetaTiles[32] __attribute__((aligned(4))
 	0x000B,0x000B,0x000A,0x000A,0x000C,0x000C,0x000C,0x000C,
 };
 
-const unsigned short block_tiles_reducedMetaMap[256] __attribute__((aligned(4))) __attribute__((visibility("hidden")))=
+const unsigned short im_bg_basicMetaMap[256] __attribute__((aligned(4))) __attribute__((visibility("hidden")))=
 {
 	0x0000,0x0001,0x0002,0x0003,0x0004,0x0004,0x0004,0x0004,
 	0x0004,0x0004,0x0004,0x0004,0x0004,0x0004,0x0004,0x0004,
@@ -96,7 +97,7 @@ const unsigned short block_tiles_reducedMetaMap[256] __attribute__((aligned(4)))
 	0x0004,0x0004,0x0004,0x0004,0x0004,0x0004,0x0004,0x0004,
 };
 
-const unsigned short block_tiles_reducedPal[256] __attribute__((aligned(4))) __attribute__((visibility("hidden")))=
+const unsigned short im_bg_basicPal[256] __attribute__((aligned(4))) __attribute__((visibility("hidden")))=
 {
 	0x701F,0x0208,0x0000,0x5AAC,0x294A,0x35AD,0x2613,0x1591,
 	0x4631,0x1D6E,0x15B3,0x39CE,0x2E56,0x068A,0x0000,0x0000,
@@ -135,4 +136,4 @@ const unsigned short block_tiles_reducedPal[256] __attribute__((aligned(4))) __a
 	0x0000,0x0000,0x0000,0x0000,0x0000,0x0000,0x0000,0x0000,
 };
 
-//}}BLOCK(block_tiles_reduced)
+//}}BLOCK(im_bg_basic)

@@ -3,7 +3,7 @@
 #include <gba.h>
 #include <stdint.h>
 
-#include "dangerous_dave.h"
+#include "im_spr_dangerous_dave.h"
 
 #define WALK_SEQ_LEN 4
 const int walk_seq[WALK_SEQ_LEN] = {0, 1, 0, -1};
@@ -24,8 +24,8 @@ const int walk_seq[WALK_SEQ_LEN] = {0, 1, 0, -1};
 
 void player_loadSprites()
 {
-    dmaCopy(dangerous_davePal, SPRITE_PALETTE, dangerous_davePalLen);
-    dmaCopy(dangerous_daveTiles, SPRITE_GFX, dangerous_daveTilesLen);
+    dmaCopy(im_spr_dangerous_davePal, SPRITE_PALETTE, im_spr_dangerous_davePalLen);
+    dmaCopy(im_spr_dangerous_daveTiles, SPRITE_GFX, im_spr_dangerous_daveTilesLen);
 }
 
 void player_init(Player *p, OBJATTR *attribs)

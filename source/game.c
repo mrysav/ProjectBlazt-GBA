@@ -6,7 +6,7 @@
 #include <stdio.h>
 
 // Main tile palette
-#include "block_tiles_reduced.h"
+#include "im_bg_basic.h"
 
 // Maps
 #include "level_1.h"
@@ -53,8 +53,8 @@ OBJATTR oam_object_backbuffer[128];
 void loadPalette()
 {
     /* load the palette from the image into palette memory via dma */
-    dmaCopy(block_tiles_reducedPal, BG_PALETTE, block_tiles_reducedPalLen);
-    dmaCopy(block_tiles_reducedTiles, CHAR_BASE_BLOCK(0), block_tiles_reducedTilesLen);
+    dmaCopy(im_bg_basicPal, BG_PALETTE, im_bg_basicPalLen);
+    dmaCopy(im_bg_basicTiles, CHAR_BASE_BLOCK(0), im_bg_basicTilesLen);
 
     /* set all control the bits in this register */
     REG_BG0CNT = 2 |                /* priority, 0 is highest, 3 is lowest */
@@ -146,10 +146,10 @@ void game_loadResources()
 
     loadPalette();
 
-    load_layer(SCREEN_BASE_BLOCK(8), REG_BG0CNT, block_tiles_reducedMetaTiles,
+    load_layer(SCREEN_BASE_BLOCK(8), REG_BG0CNT, im_bg_basicMetaTiles,
                LEVEL_1_BG0, LEVEL_1_HEIGHT, LEVEL_1_WIDTH);
 
-    load_layer(SCREEN_BASE_BLOCK(12), REG_BG1CNT, block_tiles_reducedMetaTiles,
+    load_layer(SCREEN_BASE_BLOCK(12), REG_BG1CNT, im_bg_basicMetaTiles,
                LEVEL_1_BG1, LEVEL_1_HEIGHT, LEVEL_1_WIDTH);
 
     player_loadSprites();

@@ -26,14 +26,17 @@ SOURCES		:= source
 INCLUDES	:= include
 DATA		:= font
 MUSIC		:=
+RESOURCES   := resources
+IMAGES      := $(RESOURCES)/images
+SPRITES		:= $(IMAGES)/sprites
+BACKGROUNDS := $(IMAGES)/backgrounds
 
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
 ARCH	:=	-mthumb -mthumb-interwork
 
-# TODO: Come back to this!!
-CFLAGS	:=	-g -Wall -O0\
+CFLAGS	:=	-g -Wall -O3\
 		-mcpu=arm7tdmi -mtune=arm7tdmi\
  		-fomit-frame-pointer\
 		-ffast-math \
@@ -79,6 +82,9 @@ CFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
 CPPFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
 SFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.s)))
 BINFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.*)))
+SPRITEFILES :=  $(foreach dir,$(SPRITES),$(notdir $(basename $(wildcard $(dir)/*.png))).c)
+BGFILES 	:=  $(foreach dir,$(BACKGROUNDS),$(notdir $(basename $(wildcard $(dir)/*.png))).c)
+
 
 ifneq ($(strip $(MUSIC)),)
 	export AUDIOFILES	:=	$(foreach dir,$(notdir $(wildcard $(MUSIC)/*.*)),$(CURDIR)/$(MUSIC)/$(dir))
@@ -116,15 +122,29 @@ export LIBPATHS	:=	$(foreach dir,$(LIBDIRS),-L$(dir)/lib)
 .PHONY: $(BUILD) clean
 
 #---------------------------------------------------------------------------------
-$(BUILD):
+$(BUILD): sprites backgrounds
 	@[ -d $@ ] || mkdir -p $@
-	@$(MAKE) BUILDDIR=`cd $(BUILD) && pwd` --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
+	$(MAKE) BUILDDIR=`cd $(BUILD) && pwd` -C $(BUILD) -f $(CURDIR)/Makefile
 
 #---------------------------------------------------------------------------------
 clean:
 	@echo clean ...
 	@rm -fr $(BUILD) $(TARGET).elf $(TARGET).gba
+	@rm -f $(SOURCES)/images/sprites/*
+	@rm -f $(SOURCES)/images/backgrounds/*
 
+#---------------------------------------------------------------------------------
+# This rule processes all of the image files into source files
+#---------------------------------------------------------------------------------
+%.c : $(SPRITES)/%.png
+	@grit "$<" -ftc -gt -gB8 -Mw2 -Mh2 -o "$(SOURCES)/$(basename $@)"
+
+sprites: $(SPRITEFILES)
+
+%.c : $(BACKGROUNDS)/%.png
+	@grit "$<" -ftc -mLs -gt -gT'FF00E1' -gB8 -Mw2 -Mh2 -pu16 -o "$(SOURCES)/$(basename $@)"
+
+backgrounds: $(BGFILES)
 
 #---------------------------------------------------------------------------------
 else

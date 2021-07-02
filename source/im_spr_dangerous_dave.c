@@ -1,19 +1,20 @@
 
-//{{BLOCK(dangerous_dave)
+//{{BLOCK(im_spr_dangerous_dave)
 
 //======================================================================
 //
-//	dangerous_dave, 64x32@8, 
+//	im_spr_dangerous_dave, 64x32@8, 
 //	+ palette 256 entries, not compressed
 //	+ 32 tiles Metatiled by 2x2 not compressed
 //	Total size: 512 + 2048 = 2560
 //
-//	Exported by Cearn's GBA Image Transmogrifier, v0.8.15
+//	Time-stamp: 2021-07-01, 22:45:02
+//	Exported by Cearn's GBA Image Transmogrifier, v0.8.16
 //	( http://www.coranac.com/projects/#grit )
 //
 //======================================================================
 
-const unsigned int dangerous_daveTiles[512] __attribute__((aligned(4))) __attribute__((visibility("hidden")))=
+const unsigned int im_spr_dangerous_daveTiles[512] __attribute__((aligned(4))) __attribute__((visibility("hidden")))=
 {
 	0x00000000,0x00000000,0x00000000,0x35352226,0x00000000,0x35352228,0x00000000,0xC4D0D6D4,
 	0x00000000,0xC4D0C4D6,0x00000000,0xC4C4C400,0x00000000,0x12101000,0x00000000,0x10121010,
@@ -88,7 +89,7 @@ const unsigned int dangerous_daveTiles[512] __attribute__((aligned(4))) __attrib
 	0x878380CB,0x00000000,0x85828000,0x00000087,0x10800000,0x00000018,0x18071000,0x00000000,
 };
 
-const unsigned short dangerous_davePal[256] __attribute__((aligned(4))) __attribute__((visibility("hidden")))=
+const unsigned short im_spr_dangerous_davePal[256] __attribute__((aligned(4))) __attribute__((visibility("hidden")))=
 {
 	0x7C42,0x0000,0x02A0,0x56A0,0x0015,0x5415,0x0155,0x56B5,
 	0x294A,0x7D4A,0x2BEA,0x7FEA,0x295F,0x7D5F,0x2BFF,0x7FFF,
@@ -127,4 +128,4 @@ const unsigned short dangerous_davePal[256] __attribute__((aligned(4))) __attrib
 	0x60AB,0x60B0,0x60B6,0x54B8,0x40B8,0x28B8,0x14B8,0x7FFF,
 };
 
-//}}BLOCK(dangerous_dave)
+//}}BLOCK(im_spr_dangerous_dave)
