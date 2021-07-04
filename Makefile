@@ -122,16 +122,21 @@ export LIBPATHS	:=	$(foreach dir,$(LIBDIRS),-L$(dir)/lib)
 .PHONY: $(BUILD) clean
 
 #---------------------------------------------------------------------------------
-$(BUILD): sprites backgrounds
+$(BUILD): sprites backgrounds mklevel
 	@[ -d $@ ] || mkdir -p $@
 	$(MAKE) BUILDDIR=`cd $(BUILD) && pwd` -C $(BUILD) -f $(CURDIR)/Makefile
 
 #---------------------------------------------------------------------------------
 clean:
-	@echo clean ...
+	@echo cleaning...
 	@rm -fr $(BUILD) $(TARGET).elf $(TARGET).gba
 	@rm -f $(SOURCES)/images/sprites/*
 	@rm -f $(SOURCES)/images/backgrounds/*
+	@cd $(RESOURCES)/mklevel/ && make clean
+
+mklevel:
+	@echo building mklevel...
+	@cd $(RESOURCES)/mklevel/ && make
 
 #---------------------------------------------------------------------------------
 # This rule processes all of the image files into source files
