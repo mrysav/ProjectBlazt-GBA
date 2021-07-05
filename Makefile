@@ -143,6 +143,12 @@ clean-sprites:
 clean-maps:
 	cd $(SOURCES) && rm $(MAPFILES)
 
+debug: $(BUILD)
+	@echo ---------------------
+	@echo Waiting for debugger!
+	@echo ---------------------
+	@mgba-qt --gdb $(OUTPUT).gba
+
 #---------------------------------------------------------------------------------
 # This rule processes all of the image files into source files
 #---------------------------------------------------------------------------------
