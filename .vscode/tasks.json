@@ -19,6 +19,12 @@
       "label": "Build game and run with debugger",
       "type": "shell",
       "command": "make debug",
+      "options": {
+        "env": {
+          // Set GCC optimization level to O0
+          "OLVL": " -O0"
+        }
+      },
       "problemMatcher": [],
     },
     {

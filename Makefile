@@ -37,7 +37,9 @@ MAPS 		:= $(RESOURCES)/maps
 #---------------------------------------------------------------------------------
 ARCH	:=	-mthumb -mthumb-interwork
 
-CFLAGS	:=	-g -Wall -O3\
+OLVL	?= -O3
+
+CFLAGS	:=	-g -Wall $(OLVL)\
 		-mcpu=arm7tdmi -mtune=arm7tdmi\
  		-fomit-frame-pointer\
 		-ffast-math \
@@ -142,13 +144,14 @@ clean-sprites:
 clean-maps:
 	cd $(SOURCES) && rm $(MAPFILES)
 
-debug: clean $(BUILD)
+debug: clean
+	OLVL=" -O0" make
+
+debugger: debug
 	@echo ---------------------
 	@echo Waiting for debugger!
 	@echo ---------------------
-	@nohup mgba-qt --gdb $(OUTPUT).gba > mgba.log &
-	@sleep 1
-	@cat mgba.log
+	@mgba-qt --gdb $(OUTPUT).gba
 
 #---------------------------------------------------------------------------------
 # This rule processes all of the image files into source files
