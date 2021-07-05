@@ -132,7 +132,6 @@ $(BUILD): maps
 clean:
 	@echo cleaning...
 	@rm -fr $(BUILD) $(TARGET).elf $(TARGET).gba
-	@cd $(RESOURCES)/mklevel/ && make clean
 
 clean-bg:
 	cd $(SOURCES) && rm $(BGFILES)
@@ -143,11 +142,13 @@ clean-sprites:
 clean-maps:
 	cd $(SOURCES) && rm $(MAPFILES)
 
-debug: $(BUILD)
+debug: clean $(BUILD)
 	@echo ---------------------
 	@echo Waiting for debugger!
 	@echo ---------------------
-	@mgba-qt --gdb $(OUTPUT).gba
+	@nohup mgba-qt --gdb $(OUTPUT).gba > mgba.log &
+	@sleep 1
+	@cat mgba.log
 
 #---------------------------------------------------------------------------------
 # This rule processes all of the image files into source files

@@ -3,5 +3,6 @@
 *.elf
 *.sav
 
+/mgba.log
+
 /.idea
-/.vscode

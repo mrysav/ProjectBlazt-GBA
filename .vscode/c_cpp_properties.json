@@ -1,0 +1,37 @@
+{
+  "configurations": [
+    {
+      "name": "gba",
+      "defines": [],
+      "compilerPath": "/opt/devkitpro/devkitARM/bin/arm-none-eabi-gcc",
+      "cStandard": "c17",
+      "cppStandard": "c++17",
+      "intelliSenseMode": "linux-gcc-arm",
+      "compilerArgs": [
+        "-g ",
+        "-Wall ",
+        "-O0",
+        "-mcpu=arm7tdmi",
+        "-mtune=arm7tdmi",
+        "-fomit-frame-pointer",
+        "-ffast-math"
+      ],
+      "includePath": [
+        "${workspaceFolder}/source/**",
+        "/opt/devkitpro/libgba/include/**",
+        "/opt/devkitpro/libtonc/include/**"
+      ]
+    },
+    {
+      "name": "system",
+      "defines": [],
+      "compilerPath": "/usr/bin/g++",
+      "cStandard": "c17",
+      "cppStandard": "c++17",
+      "includePath": [
+        "/usr/include"
+      ]
+    }
+  ],
+  "version": 4
+}

@@ -1,0 +1,49 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build (Release)",
+      "type": "shell",
+      "command": "make build",
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Build game and run with debugger",
+      "type": "shell",
+      "command": "make debug",
+      "problemMatcher": [],
+    },
+    {
+      "label": "Clean",
+      "type": "shell",
+      "command": "make clean",
+      "problemMatcher": [],
+      "group": "build"
+    },
+    {
+      "type": "cppbuild",
+      "label": "Build mklevel (debug)",
+      "command": "/usr/bin/make",
+      "args": [],
+      "options": {
+        "cwd": "${workspaceFolder}/resources/mklevel",
+        "env": {
+          "PATH": "${env:PATH}",
+          "CFLAGS": " -std=c++17 -g -Wall -O0"
+        },
+      },
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "group": "build",
+    }
+  ]
+}
