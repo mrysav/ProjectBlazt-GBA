@@ -115,7 +115,8 @@ void write_c_file(string filename, string map_name, int map_width,
 
   outfile << "#include <stdint.h>\n"
           << "\n"
-          << "#include \"" << filename << ".h\"\n"
+          << "#include \"" << filesystem::path(filename).stem().generic_string()
+          << ".h\"\n"
           << "\n";
 
   for (size_t l = 0; l < tiledata.size(); l++) {
@@ -125,7 +126,7 @@ void write_c_file(string filename, string map_name, int map_width,
 
     for (auto row : layer) {
       for (auto col : row) {
-        outfile << "0x" << hex << (max(col - 1, 0)) << ", ";
+        outfile << "0x" << hex << (max(col - 1, 0)) << dec << ", ";
       }
       outfile << "\n  ";
     }

@@ -2,3 +2,6 @@
 *.gba
 *.elf
 *.sav
+
+/.idea
+/.vscode

@@ -30,6 +30,7 @@ RESOURCES   := resources
 IMAGES      := $(RESOURCES)/images
 SPRITES		:= $(IMAGES)/sprites
 BACKGROUNDS := $(IMAGES)/backgrounds
+MAPS 		:= $(RESOURCES)/maps
 
 #---------------------------------------------------------------------------------
 # options for code generation
@@ -82,8 +83,9 @@ CFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
 CPPFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
 SFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.s)))
 BINFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.*)))
-SPRITEFILES :=  $(foreach dir,$(SPRITES),$(notdir $(basename $(wildcard $(dir)/*.png))).c)
-BGFILES 	:=  $(foreach dir,$(BACKGROUNDS),$(notdir $(basename $(wildcard $(dir)/*.png))).c)
+SPRITEFILES :=  $(addsuffix .c, $(foreach dir,$(SPRITES),$(notdir $(basename $(wildcard $(dir)/*.png)))))
+BGFILES 	:=  $(addsuffix .c, $(foreach dir,$(BACKGROUNDS),$(notdir $(basename $(wildcard $(dir)/*.png)))))
+MAPFILES	:=	$(addsuffix .c, $(foreach dir,$(MAPS),$(notdir $(basename $(wildcard $(dir)/*.tmx)))))
 
 
 ifneq ($(strip $(MUSIC)),)
@@ -122,7 +124,7 @@ export LIBPATHS	:=	$(foreach dir,$(LIBDIRS),-L$(dir)/lib)
 .PHONY: $(BUILD) clean
 
 #---------------------------------------------------------------------------------
-$(BUILD): sprites backgrounds mklevel
+$(BUILD): maps
 	@[ -d $@ ] || mkdir -p $@
 	$(MAKE) BUILDDIR=`cd $(BUILD) && pwd` -C $(BUILD) -f $(CURDIR)/Makefile
 
@@ -130,26 +132,38 @@ $(BUILD): sprites backgrounds mklevel
 clean:
 	@echo cleaning...
 	@rm -fr $(BUILD) $(TARGET).elf $(TARGET).gba
-	@rm -f $(SOURCES)/images/sprites/*
-	@rm -f $(SOURCES)/images/backgrounds/*
 	@cd $(RESOURCES)/mklevel/ && make clean
 
-mklevel:
-	@echo building mklevel...
-	@cd $(RESOURCES)/mklevel/ && make
+clean-bg:
+	cd $(SOURCES) && rm $(BGFILES)
+
+clean-sprites:
+	cd $(SOURCES) && rm $(SPRITEFILES)
+
+clean-maps:
+	cd $(SOURCES) && rm $(MAPFILES)
 
 #---------------------------------------------------------------------------------
 # This rule processes all of the image files into source files
 #---------------------------------------------------------------------------------
 %.c : $(SPRITES)/%.png
-	@grit "$<" -ftc -gt -gB8 -Mw2 -Mh2 -o "$(SOURCES)/$(basename $@)"
+	grit "$<" -ftc -gt -gB8 -Mw2 -Mh2 -o "$(SOURCES)/$(basename $@)"
 
-sprites: $(SPRITEFILES)
+sprites: clean-sprites $(SPRITEFILES)
 
 %.c : $(BACKGROUNDS)/%.png
-	@grit "$<" -ftc -mLs -gt -gT'FF00E1' -gB8 -Mw2 -Mh2 -pu16 -o "$(SOURCES)/$(basename $@)"
+	grit "$<" -ftc -mLs -gt -gT'FF00E1' -gB8 -Mw2 -Mh2 -pu16 -o "$(SOURCES)/$(basename $@)"
 
-backgrounds: $(BGFILES)
+backgrounds: clean-bg $(BGFILES)
+
+mklevel:
+	@echo building mklevel...
+	@cd $(RESOURCES)/mklevel/ && make
+
+%.c	: $(MAPS)/%.tmx
+	$(RESOURCES)/mklevel/mklevel "$<" "$(SOURCES)/$(basename $@)"
+
+maps: mklevel clean-maps $(MAPFILES)
 
 #---------------------------------------------------------------------------------
 else

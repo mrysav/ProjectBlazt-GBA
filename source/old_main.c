@@ -87,7 +87,6 @@
 //     sprite->spriteAttribs->attr0 = 0x2000 + sprite->posY;
 //     sprite->spriteAttribs->attr1 = (sprite->facingRight? 0x4000 : 0x5000) + sprite->posX;
 
-
 // }
 
 // void tickSpriteAnimation(HeroSprite* sprite, int frame)
