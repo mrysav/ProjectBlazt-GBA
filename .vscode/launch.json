@@ -14,7 +14,6 @@
       "cwd": "${workspaceRoot}",
       "valuesFormatting": "parseText",
       "gdbpath": "/opt/devkitpro/devkitARM/bin/arm-none-eabi-gdb",
-      "preLaunchTask": "Build game and run with debugger",
     },
     {
       "name": "Debug mklevel (cpp)",
