@@ -17,7 +17,7 @@
         "-ffast-math"
       ],
       "includePath": [
-        "${workspaceFolder}/source/**",
+        "${workspaceFolder}/**",
         "/opt/devkitpro/libgba/include/**",
         "/opt/devkitpro/libtonc/include/**"
       ]

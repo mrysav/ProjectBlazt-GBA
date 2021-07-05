@@ -3,11 +3,11 @@
 
 //======================================================================
 //
-//	im_bg_basic, 256x256@8, 
+//	im_bg_basic, 256x256@8,
 //	Transparent color : FF,00,E1
 //	+ palette 256 entries, not compressed
 //	+ 13 tiles (t|f reduced) not compressed
-//	+ regular map (in SBBs), not compressed, 16x16 
+//	+ regular map (in SBBs), not compressed, 16x16
 //	Metatiled by 2x2
 //	Total size: 512 + 832 + 64 + 512 = 1920
 //
