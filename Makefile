@@ -142,7 +142,7 @@ clean-sprites:
 	cd $(SOURCES) && rm $(SPRITEFILES)
 
 clean-maps:
-	cd $(SOURCES) && rm $(MAPFILES)
+	cd $(SOURCES) && rm -f $(MAPFILES)
 
 debug: clean
 	OLVL=" -O0" make

@@ -10,6 +10,7 @@
 
 // Maps
 #include "level_1.h"
+#include "map_mario_1.h"
 
 // Utilities
 #include "display.h"
@@ -41,8 +42,6 @@ uint map_total_width;
 uint map_total_height;
 uint max_move_x;
 uint max_move_y;
-uint max_scroll_x;
-uint max_scroll_y;
 
 Rect camera = {-CENTER_PLAYER_SCREEN_X, -CENTER_PLAYER_SCREEN_Y, SCREEN_WIDTH, SCREEN_HEIGHT};
 
@@ -50,36 +49,59 @@ int numEnem = 0;
 
 OBJATTR oam_object_backbuffer[128];
 
+typedef struct level_data
+{
+  uint height;
+  uint width;
+  uint len;
+
+  const uint16_t *layer0;
+  const uint16_t *layer1;
+  const uint16_t *layer2;
+
+} level_data;
+
+level_data const MARIO_1_1 = {
+    MAP_MARIO_1_HEIGHT,
+    MAP_MARIO_1_WIDTH,
+    MAP_MARIO_1_LEN,
+    MAP_MARIO_1_BG0,
+    MAP_MARIO_1_BG1,
+    MAP_MARIO_1_BG2,
+};
+
+level_data const *active_level;
+
 void loadPalette()
 {
-    /* load the palette from the image into palette memory via dma */
-    dmaCopy(im_bg_basicPal, BG_PALETTE, im_bg_basicPalLen);
-    dmaCopy(im_bg_basicTiles, CHAR_BASE_BLOCK(0), im_bg_basicTilesLen);
+  /* load the palette from the image into palette memory via dma */
+  dmaCopy(im_bg_basicPal, BG_PALETTE, im_bg_basicPalLen);
+  dmaCopy(im_bg_basicTiles, CHAR_BASE_BLOCK(0), im_bg_basicTilesLen);
 
-    /* set all control the bits in this register */
-    REG_BG0CNT = 2 |                /* priority, 0 is highest, 3 is lowest */
-                 (CHAR_BASE(0)) |   /* the char block the image data is stored in */
-                 (BG_MOSAIC) |      /* the mosaic flag */
-                 (BG_256_COLOR) |   /* color mode, 0 is 16 colors, 1 is 256 colors */
-                 (SCREEN_BASE(8)) | /* the screen block the tile data is stored in */
-                 (BG_WRAP) |        /* wrapping flag */
-                 (BG_SIZE_3);       /* bg size 3 is 512x512 */
+  /* set all control the bits in this register */
+  REG_BG0CNT = 2 |                /* priority, 0 is highest, 3 is lowest */
+               (CHAR_BASE(0)) |   /* the char block the image data is stored in */
+               (BG_MOSAIC) |      /* the mosaic flag */
+               (BG_256_COLOR) |   /* color mode, 0 is 16 colors, 1 is 256 colors */
+               (SCREEN_BASE(8)) | /* the screen block the tile data is stored in */
+               (BG_WRAP) |        /* wrapping flag */
+               (BG_SIZE_3);       /* bg size 3 is 512x512 */
 
-    REG_BG1CNT = 1 |                 /* priority, 0 is highest, 3 is lowest */
-                 (CHAR_BASE(0)) |    /* the char block the image data is stored in */
-                 (BG_MOSAIC) |       /* the mosaic flag */
-                 (BG_256_COLOR) |    /* color mode, 0 is 16 colors, 1 is 256 colors */
-                 (SCREEN_BASE(12)) | /* the screen block the tile data is stored in */
-                 (BG_WRAP) |         /* wrapping flag */
-                 (BG_SIZE_3);        /* bg size 3 is 512x512 */
+  REG_BG1CNT = 1 |                 /* priority, 0 is highest, 3 is lowest */
+               (CHAR_BASE(0)) |    /* the char block the image data is stored in */
+               (BG_MOSAIC) |       /* the mosaic flag */
+               (BG_256_COLOR) |    /* color mode, 0 is 16 colors, 1 is 256 colors */
+               (SCREEN_BASE(12)) | /* the screen block the tile data is stored in */
+               (BG_WRAP) |         /* wrapping flag */
+               (BG_SIZE_3);        /* bg size 3 is 512x512 */
 
-    REG_BG2CNT = 0 |                 /* priority, 0 is highest, 3 is lowest */
-                 (CHAR_BASE(0)) |    /* the char block the image data is stored in */
-                 (BG_MOSAIC) |       /* the mosaic flag */
-                 (BG_256_COLOR) |    /* color mode, 0 is 16 colors, 1 is 256 colors */
-                 (SCREEN_BASE(16)) | /* the screen block the tile data is stored in */
-                 (BG_WRAP) |         /* wrapping flag */
-                 (BG_SIZE_3);        /* bg size 3 is 512x512 */
+  REG_BG2CNT = 0 |                 /* priority, 0 is highest, 3 is lowest */
+               (CHAR_BASE(0)) |    /* the char block the image data is stored in */
+               (BG_MOSAIC) |       /* the mosaic flag */
+               (BG_256_COLOR) |    /* color mode, 0 is 16 colors, 1 is 256 colors */
+               (SCREEN_BASE(16)) | /* the screen block the tile data is stored in */
+               (BG_WRAP) |         /* wrapping flag */
+               (BG_SIZE_3);        /* bg size 3 is 512x512 */
 }
 
 /*!
@@ -91,12 +113,12 @@ void loadPalette()
  */
 uint se_index_fast(uint tx, uint ty, u16 bgcnt)
 {
-    uint n = tx + ty * 32;
-    if (tx >= 32)
-        n += 0x03E0; // Size of one screenblock (in tiles) - Size of one row of tiles (1024-32)
-    if (ty >= 32 && (bgcnt & BG_SIZE_3) == BG_SIZE_3)
-        n += 0x0400; // Size of one screenblock (1024)
-    return n;
+  uint n = tx + ty * 32;
+  if (tx >= 32)
+    n += 0x03E0; // Size of one screenblock (in tiles) - Size of one row of tiles (1024-32)
+  if (ty >= 32 && (bgcnt & BG_SIZE_3) == BG_SIZE_3)
+    n += 0x0400; // Size of one screenblock (1024)
+  return n;
 }
 
 /*!
@@ -108,70 +130,69 @@ uint se_index_fast(uint tx, uint ty, u16 bgcnt)
  * \param height The height of the map (in 16x16 tiles)
  * \param width The width of the map (in 16x16 tiles)
  */
-void load_layer(u16 *base_sb, u16 bgcnt, u16 *tileset, u16 *tiles, uint height, uint width)
+void load_layer(u16 *base_sb, u16 bgcnt, const u16 *tileset, const u16 *tiles, uint height, uint width)
 {
-    for (uint y = 0; y < height; y++)
+  for (uint y = 0; y < height; y++)
+  {
+    for (uint x = 0; x < width; x++)
     {
-        for (uint x = 0; x < width; x++)
-        {
-            uint screenblock = se_index_fast(x * 2, y * 2, bgcnt);
-            u16 *dest = base_sb + screenblock;
+      uint screenblock = se_index_fast(x * 2, y * 2, bgcnt);
+      u16 *dest = base_sb + screenblock;
 
-            u16 tile = tiles[y * width + x];
-            u16 base_idx = tile * 4;
-            for (uint i = 0; i < 2; i++)
-            {
-                u16 o1 = tileset[base_idx + i];
-                u16 o2 = tileset[base_idx + i + 2];
-                dest[i] = o1;
-                dest[width + i] = o2;
-            }
-        }
+      u16 tile = tiles[y * width + x];
+      u16 base_idx = tile * 4;
+      for (uint i = 0; i < 2; i++)
+      {
+        u16 o1 = tileset[base_idx + i];
+        u16 o2 = tileset[base_idx + i + 2];
+        dest[i] = o1;
+        dest[width + i] = o2;
+      }
     }
+  }
 }
 
 void clear_sprites()
 {
-    for (int i = 0; i < 128; i++)
-    {
-        OAM[i].attr0 = SCREEN_HEIGHT;
-        OAM[i].attr1 = SCREEN_WIDTH;
-    }
+  for (int i = 0; i < 128; i++)
+  {
+    OAM[i].attr0 = SCREEN_HEIGHT;
+    OAM[i].attr1 = SCREEN_WIDTH;
+  }
 }
 
 void game_loadResources()
 {
-    // Set the right display mode
-    REG_DISPCNT = MODE_0 | BG0_ON | BG1_ON | BG2_ON | OBJ_ON | OBJ_1D_MAP;
+  // Set the right display mode
+  REG_DISPCNT = MODE_0 | BG0_ON | BG1_ON | BG2_ON | OBJ_ON | OBJ_1D_MAP;
 
-    loadPalette();
+  active_level = &MARIO_1_1;
 
-    load_layer(SCREEN_BASE_BLOCK(8), REG_BG0CNT, im_bg_basicMetaTiles,
-               LEVEL_1_BG0, LEVEL_1_HEIGHT, LEVEL_1_WIDTH);
+  loadPalette();
 
-    load_layer(SCREEN_BASE_BLOCK(12), REG_BG1CNT, im_bg_basicMetaTiles,
-               LEVEL_1_BG1, LEVEL_1_HEIGHT, LEVEL_1_WIDTH);
+  load_layer(SCREEN_BASE_BLOCK(8), REG_BG0CNT, im_bg_basicMetaTiles,
+             active_level->layer0, active_level->height, active_level->width);
 
-    player_loadSprites();
+  load_layer(SCREEN_BASE_BLOCK(12), REG_BG1CNT, im_bg_basicMetaTiles,
+             active_level->layer1, active_level->height, active_level->width);
 
-    clear_sprites();
+  player_loadSprites();
 
-    player_init(&player, &oam_object_backbuffer[0]);
+  clear_sprites();
 
-    map_total_height = LEVEL_1_HEIGHT * TILE_HEIGHT;
-    map_total_width = LEVEL_1_WIDTH * TILE_WIDTH;
+  player_init(&player, &oam_object_backbuffer[0]);
 
-    max_scroll_x = map_total_width - SCREEN_WIDTH;
-    max_scroll_y = map_total_height - SCREEN_HEIGHT;
+  map_total_height = active_level->height * TILE_HEIGHT;
+  map_total_width = active_level->width * TILE_WIDTH;
 
-    max_move_x = map_total_width - player.hitbox.width;
-    max_move_y = map_total_height - player.hitbox.height;
+  max_move_x = map_total_width - player.hitbox.width;
+  max_move_y = map_total_height - player.hitbox.height;
 }
 
 void game_unloadResources()
 {
-    player_destroy(&player);
-    clear_sprites();
+  player_destroy(&player);
+  clear_sprites();
 }
 
 // void spawnEnemy() {
@@ -192,205 +213,205 @@ void game_unloadResources()
 
 gravdata calc_collide(int xvel, int xedge, int x, int width,
                       int yvel, int yedge, int y, int height,
-                      int16_t *map, u16 map_width, u16 map_height)
+                      const u16 *map, u16 map_width, u16 map_height)
 {
-    gravdata res = {0};
+  gravdata res = {0};
 
-    if (xvel != 0)
+  if (xvel != 0)
+  {
+    int tileX = (xedge + xvel) / TILE_WIDTH;
+    int topTileY = y / TILE_HEIGHT;
+    int botTileY = (y + height - 1) / TILE_HEIGHT;
+    bool collides = false;
+    for (int t = topTileY; t <= botTileY; t++)
     {
-        int tileX = (xedge + xvel) / TILE_WIDTH;
-        int topTileY = y / TILE_HEIGHT;
-        int botTileY = (y + height - 1) / TILE_HEIGHT;
-        bool collides = false;
-        for (int t = topTileY; t <= botTileY; t++)
+      uint idx = t * map_width + tileX;
+      if (map[idx] > 0)
+      {
+        collides = true;
+        break;
+      }
+    }
+    if (!collides)
+    {
+      res.xdist = xvel;
+    }
+  }
+
+  if (yvel != 0)
+  {
+    int tileY = (yedge + yvel) / TILE_HEIGHT;
+    int leftTileX = x / TILE_WIDTH;
+    int rightTileX = (x + width - 1) / TILE_WIDTH;
+    int dist = yvel;
+    for (int t = leftTileX; t <= rightTileX; t++)
+    {
+      uint idx = tileY * map_width + t;
+      if (map[idx] > 0)
+      {
+        int tile_realY = tileY * TILE_HEIGHT;
+
+        // entity would go through the ceiling
+        if (y >= (tile_realY + TILE_HEIGHT))
         {
-            uint idx = t * map_width + tileX;
-            if (map[idx] > 0)
-            {
-                collides = true;
-                break;
-            }
+          dist = (tile_realY + TILE_HEIGHT) - y;
+          res.hit_top = true;
         }
-        if (!collides)
+        // entity would go through the floor
+        else
         {
-            res.xdist = xvel;
+          dist = tile_realY - (y + height);
+          res.hit_floor = true;
         }
+
+        break;
+      }
     }
 
-    if (yvel != 0)
-    {
-        int tileY = (yedge + yvel) / TILE_HEIGHT;
-        int leftTileX = x / TILE_WIDTH;
-        int rightTileX = (x + width - 1) / TILE_WIDTH;
-        int dist = yvel;
-        for (int t = leftTileX; t <= rightTileX; t++)
-        {
-            uint idx = tileY * map_width + t;
-            if (map[idx] > 0)
-            {
-                int tile_realY = tileY * TILE_HEIGHT;
+    res.ydist = dist;
+  }
 
-                // entity would go through the ceiling
-                if (y >= (tile_realY + TILE_HEIGHT))
-                {
-                    dist = (tile_realY + TILE_HEIGHT) - y;
-                    res.hit_top = true;
-                }
-                // entity would go through the floor
-                else
-                {
-                    dist = tile_realY - (y + height);
-                    res.hit_floor = true;
-                }
-
-                break;
-            }
-        }
-
-        res.ydist = dist;
-    }
-
-    return res;
+  return res;
 }
 
 State game_processInput(uint16_t keys)
 {
-    static uint delay;
-    delay = (++delay) % 12;
+  static uint delay = 0;
+  delay = (delay + 1) % 12;
 
-    //spawnEnemy();
+  //spawnEnemy();
 
-    static bool isJumping;
-    static int yvel;
+  static bool isJumping;
+  static int yvel;
 
-    if (keys & KEY_START)
+  if (keys & KEY_START)
+  {
+    return MENU;
+  }
+
+  int xB = 0;
+  int xvel = 0;
+  if (keys & KEY_RIGHT)
+  {
+    xB = player.hitbox.x + player.hitbox.width - 1;
+    xvel = RUN_VEL;
+    player.facingLeft = false;
+  }
+  else if (keys & KEY_LEFT)
+  {
+    xB = player.hitbox.x;
+    xvel = -RUN_VEL;
+    player.facingLeft = true;
+  }
+
+  int yB = 0;
+  if (keys & KEY_A && !isJumping)
+  {
+    yvel = JUMP_VEL;
+    isJumping = true;
+  }
+  else
+  {
+    yvel = min(yvel + 1, GRAVITY);
+  }
+
+  if (yvel <= 0)
+  {
+    yB = player.hitbox.y;
+  }
+  else
+  {
+    yB = player.hitbox.y + player.hitbox.height - 1;
+  }
+
+  gravdata dat = calc_collide(xvel, xB, player.hitbox.x, player.hitbox.width,
+                              yvel, yB, player.hitbox.y, player.hitbox.height,
+                              active_level->layer1, active_level->width, active_level->height);
+
+  if (isJumping)
+  {
+    if (dat.hit_floor)
     {
-        return MENU;
+      isJumping = false;
     }
-
-    int xB = 0;
-    int xvel = 0;
-    if (keys & KEY_RIGHT)
+    if (dat.hit_top)
     {
-        xB = player.hitbox.x + player.hitbox.width - 1;
-        xvel = RUN_VEL;
-        player.facingLeft = false;
+      yvel = 0;
     }
-    else if (keys & KEY_LEFT)
+  }
+  else
+  {
+    if (dat.ydist != 0)
     {
-        xB = player.hitbox.x;
-        xvel = -RUN_VEL;
-        player.facingLeft = true;
+      isJumping = true;
     }
+  }
 
-    int yB = 0;
-    if (keys & KEY_A && !isJumping)
-    {
-        yvel = JUMP_VEL;
-        isJumping = true;
-    }
-    else
-    {
-        yvel = min(yvel + 1, GRAVITY);
-    }
+  int new_x = player.position.x + dat.xdist;
+  int new_y = player.position.y + dat.ydist;
 
-    if (yvel <= 0)
-    {
-        yB = player.hitbox.y;
-    }
-    else
-    {
-        yB = player.hitbox.y + player.hitbox.height - 1;
-    }
+  if (new_x < 0)
+  {
+    new_x = 0;
+  }
 
-    gravdata dat = calc_collide(xvel, xB, player.hitbox.x, player.hitbox.width,
-                                yvel, yB, player.hitbox.y, player.hitbox.height,
-                                LEVEL_1_BG1, LEVEL_1_WIDTH, LEVEL_1_HEIGHT);
+  if (new_x > max_move_x)
+  {
+    new_x = max_move_x;
+  }
 
-    if (isJumping)
-    {
-        if (dat.hit_floor)
-        {
-            isJumping = false;
-        }
-        if (dat.hit_top)
-        {
-            yvel = 0;
-        }
-    }
-    else
-    {
-        if (dat.ydist != 0)
-        {
-            isJumping = true;
-        }
-    }
+  if (new_y < 0)
+  {
+    new_y = 0;
+  }
 
-    int new_x = player.position.x + dat.xdist;
-    int new_y = player.position.y + dat.ydist;
+  if (new_y > max_move_y)
+  {
+    new_y = max_move_y;
+  }
 
-    if (new_x < 0)
-    {
-        new_x = 0;
-    }
+  player_setPosition(&player, new_x, new_y);
 
-    if (new_x > max_move_x)
-    {
-        new_x = max_move_x;
-    }
+  player.isMoving = (xvel != 0) || (dat.ydist != 0);
+  player.isJumping = isJumping;
 
-    if (new_y < 0)
-    {
-        new_y = 0;
-    }
+  player_tick(&player, delay);
 
-    if (new_y > max_move_y)
-    {
-        new_y = max_move_y;
-    }
+  // for(uint i = 0; i < MAX_NPC_COUNT; i++) {
+  //     if (enemies[i].isInit) {
+  //         enemies[i].tick(&enemies[i], calc_collide, delay);
+  //     }
+  // }
 
-    player_setPosition(&player, new_x, new_y);
+  camera.x = player.position.x - CENTER_PLAYER_SCREEN_X;
+  camera.y = player.position.y - CENTER_PLAYER_SCREEN_Y;
 
-    player.isMoving = (xvel != 0) || (dat.ydist != 0);
-    player.isJumping = isJumping;
-
-    player_tick(&player, delay);
-
-    // for(uint i = 0; i < MAX_NPC_COUNT; i++) {
-    //     if (enemies[i].isInit) {
-    //         enemies[i].tick(&enemies[i], calc_collide, delay);
-    //     }
-    // }
-
-    camera.x = player.position.x - CENTER_PLAYER_SCREEN_X;
-    camera.y = player.position.y - CENTER_PLAYER_SCREEN_Y;
-
-    return GAME;
+  return GAME;
 }
 
 void game_updateFrame()
 {
-    OAM[0] = oam_object_backbuffer[0];
+  OAM[0] = oam_object_backbuffer[0];
 
-    REG_BG0HOFS = camera.x;
-    REG_BG0VOFS = camera.y;
+  REG_BG0HOFS = camera.x;
+  REG_BG0VOFS = camera.y;
 
-    REG_BG1HOFS = camera.x;
-    REG_BG1VOFS = camera.y;
+  REG_BG1HOFS = camera.x;
+  REG_BG1VOFS = camera.y;
 
-    REG_BG2HOFS = camera.x;
-    REG_BG2VOFS = camera.y;
+  REG_BG2HOFS = camera.x;
+  REG_BG2VOFS = camera.y;
 
-    //bg_scroll_x = 0;
-    //bg_scroll_y = 0;
+  //bg_scroll_x = 0;
+  //bg_scroll_y = 0;
 
-    // player_draw(&player, &camera);
+  // player_draw(&player, &camera);
 
-    // for(uint i = 0; i < MAX_NPC_COUNT; i++) {
-    //     if (enemies[i].isInit) {
-    //         enemies[i].draw(&enemies[i], &camera, enem_sprites);
-    //     }
-    // }
+  // for(uint i = 0; i < MAX_NPC_COUNT; i++) {
+  //     if (enemies[i].isInit) {
+  //         enemies[i].draw(&enemies[i], &camera, enem_sprites);
+  //     }
+  // }
 }
 
 const GameState GAME_STATE = {
