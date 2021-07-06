@@ -70,6 +70,15 @@ level_data const MARIO_1_1 = {
     MAP_MARIO_1_BG2,
 };
 
+level_data const LEVEL_1_DBG = {
+    LEVEL_1_HEIGHT,
+    LEVEL_1_WIDTH,
+    LEVEL_1_LEN,
+    LEVEL_1_BG0,
+    LEVEL_1_BG1,
+    LEVEL_1_BG2,
+};
+
 level_data const *active_level;
 
 void loadPalette()
@@ -166,7 +175,7 @@ void game_loadResources()
   // Set the right display mode
   REG_DISPCNT = MODE_0 | BG0_ON | BG1_ON | BG2_ON | OBJ_ON | OBJ_1D_MAP;
 
-  active_level = &MARIO_1_1;
+  active_level = &LEVEL_1_DBG;
 
   loadPalette();
 
