@@ -133,7 +133,7 @@ $(BUILD): maps
 #---------------------------------------------------------------------------------
 clean:
 	@echo cleaning...
-	@rm -fr $(BUILD) $(TARGET).elf $(TARGET).gba
+	@rm -fr $(BUILD)/* $(TARGET).elf $(TARGET).gba
 
 clean-bg:
 	cd $(SOURCES) && rm $(BGFILES)
@@ -143,6 +143,9 @@ clean-sprites:
 
 clean-maps:
 	cd $(SOURCES) && rm -f $(MAPFILES)
+
+run: $(BUILD)
+	@mgba-qt $(OUTPUT).gba
 
 debug: clean
 	OLVL=" -O0" make
