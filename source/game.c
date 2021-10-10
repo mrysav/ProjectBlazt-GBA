@@ -42,8 +42,10 @@ uint map_total_width;
 uint map_total_height;
 uint max_move_x;
 uint max_move_y;
+uint max_camera_x;
+uint max_camera_y;
 
-Rect camera = {-CENTER_PLAYER_SCREEN_X, -CENTER_PLAYER_SCREEN_Y, SCREEN_WIDTH, SCREEN_HEIGHT};
+// Rect camera = {-CENTER_PLAYER_SCREEN_X, -CENTER_PLAYER_SCREEN_Y, SCREEN_WIDTH, SCREEN_HEIGHT};
 
 int numEnem = 0;
 
@@ -196,6 +198,9 @@ void game_loadResources()
 
   max_move_x = map_total_width - player.hitbox.width;
   max_move_y = map_total_height - player.hitbox.height;
+
+  max_camera_x = map_total_width - SCREEN_WIDTH;
+  max_camera_y = map_total_height - SCREEN_HEIGHT;
 }
 
 void game_unloadResources()
@@ -219,6 +224,24 @@ void game_unloadResources()
 //     enemies[numEnem].init(&enemies[numEnem], pos);
 //     numEnem++;
 // }
+
+void camera_for_player(Player *player, Vec_u16 *camera, Vec_u16 *offset)
+{
+
+  // The "happy case" - if we can center the camera on the player, we're good
+  u16 centered_x = player->position.x - CENTER_PLAYER_SCREEN_X;
+  u16 centered_y = player->position.y - CENTER_PLAYER_SCREEN_Y;
+  offset->x = 0;
+  offset->y = 0;
+  camera->x = centered_x;
+  camera->x = centered_y;
+
+  // Underflow
+  if (centered_x > player->position.x)
+  {
+    centered_x = 0;
+  }
+}
 
 gravdata calc_collide(int xvel, int xedge, int x, int width,
                       int yvel, int yedge, int y, int height,
@@ -392,9 +415,6 @@ State game_processInput(uint16_t keys)
   //     }
   // }
 
-  camera.x = player.position.x - CENTER_PLAYER_SCREEN_X;
-  camera.y = player.position.y - CENTER_PLAYER_SCREEN_Y;
-
   return GAME;
 }
 
@@ -402,14 +422,18 @@ void game_updateFrame()
 {
   OAM[0] = oam_object_backbuffer[0];
 
-  REG_BG0HOFS = camera.x;
-  REG_BG0VOFS = camera.y;
+  Vec_u16 cam = {0};
+  Vec_u16 cam_player_offset = {0};
+  camera_for_player(&player, &cam, &cam_player_offset);
 
-  REG_BG1HOFS = camera.x;
-  REG_BG1VOFS = camera.y;
+  REG_BG0HOFS = cam.x;
+  REG_BG0VOFS = cam.y;
 
-  REG_BG2HOFS = camera.x;
-  REG_BG2VOFS = camera.y;
+  REG_BG1HOFS = cam.x;
+  REG_BG1VOFS = cam.y;
+
+  REG_BG2HOFS = cam.x;
+  REG_BG2VOFS = cam.y;
 
   //bg_scroll_x = 0;
   //bg_scroll_y = 0;

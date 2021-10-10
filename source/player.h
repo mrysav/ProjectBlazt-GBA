@@ -1,4 +1,4 @@
-# pragma once
+#pragma once
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -10,30 +10,30 @@
 // TODO: Maybe define spritesheet here?
 
 typedef struct Player {
-    OBJATTR* spriteAttribs;
+  OBJATTR *spriteAttribs;
 
-    uint firstFrame;
-    uint animFrame;
-    uint framesInAir;
+  uint firstFrame;
+  uint animFrame;
+  uint framesInAir;
 
-    bool isJumping;
-    bool facingLeft;
-    bool isMoving;
+  bool isJumping;
+  bool facingLeft;
+  bool isMoving;
 
-    Vec velocity;
-    Vec position;
-    Rect hitbox;
+  Vec velocity;
+  Vec position;
+  Rect hitbox;
 } Player;
 
 void player_loadSprites();
 
-void player_init(Player* p, OBJATTR* attribs);
+void player_init(Player *p, OBJATTR *attribs);
 
-void player_destroy(Player* player);
+void player_destroy(Player *player);
 
-void player_tick(Player* player, int delay);
+void player_tick(Player *player, int delay);
 
-void player_setPosition(Player* this, int x, int y);
+void player_setPosition(Player *this, int x, int y);
 
 // Spritesheet information
 #define PLAYER_SPRITE_HEIGHT 16
@@ -49,6 +49,8 @@ void player_setPosition(Player* this, int x, int y);
 // MAX_PLAYER_SCREEN_Y = SCREEN_HEIGHT - PLAYER_SPRITE_HEIGHT;
 #define MAX_PLAYER_SCREEN_Y 144
 
-Vec player_getScreenPos(Player* this);
-void player_setScreenX(Player* this, u16 x);
-void player_setScreenY(Player* this, u16 y);
+Vec_u16 player_getScreenPos(Player *this);
+void player_setScreenPos(Player *this, Vec_u16 pos);
+void player_setScreenOffset(Player *this, Vec_u16 offs, bool neg);
+void player_setScreenX(Player *this, u16 x);
+void player_setScreenY(Player *this, u16 y);
