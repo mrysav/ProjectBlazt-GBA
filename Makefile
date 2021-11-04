@@ -111,7 +111,7 @@ endif
 
 export OFILES_BIN := $(addsuffix .o,$(BINFILES))
 
-export OFILES_SOURCES := $(CPPFILES:.cpp=.o) $(CFILES:.c=.o) $(SFILES:.s=.o)
+export OFILES_SOURCES := $(CFILES:.c=.o) $(CPPFILES:.cpp=.o) $(SFILES:.s=.o)
 
 export OFILES := $(OFILES_BIN) $(OFILES_SOURCES)
 
@@ -148,7 +148,7 @@ run: $(BUILD)
 	@mgba-qt $(OUTPUT).gba
 
 debug: clean
-	OLVL=" -O0" make
+	OLVL=" -O1" make
 
 debugger: debug
 	@echo ---------------------

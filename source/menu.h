@@ -2,4 +2,12 @@
 
 #include "state.h"
 
-extern const GameState MENU_STATE;
+class MenuState : public State {
+public:
+  void load();
+  StateType update();
+  void unload();
+
+private:
+  bool pressed = false;
+};

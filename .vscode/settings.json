@@ -1,0 +1,8 @@
+{
+    "editor.formatOnSave": true,
+    "files.associations": {
+        "*.env": "shellscript",
+        "Gemfile": "ruby",
+        "atomic": "cpp"
+    }
+}
