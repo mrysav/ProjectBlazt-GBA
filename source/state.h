@@ -1,7 +1,5 @@
 #pragma once
 
-using namespace std;
-
 enum StateType { MENU = 0, GAME = 1 };
 
 // typedef struct GameState {
@@ -13,7 +11,7 @@ enum StateType { MENU = 0, GAME = 1 };
 
 class State {
 public:
-  virtual void load();
-  virtual StateType update();
-  virtual void unload();
+  virtual void load(){};
+  virtual StateType update(){};
+  virtual void unload(){};
 };

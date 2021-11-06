@@ -148,7 +148,7 @@ run: $(BUILD)
 	@mgba-qt $(OUTPUT).gba
 
 debug: clean
-	OLVL=" -O1" make
+	OLVL=" -O0" make
 
 debugger: debug
 	@echo ---------------------

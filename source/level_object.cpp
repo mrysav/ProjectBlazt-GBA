@@ -92,10 +92,10 @@ void LevelObject::init_backgrounds() {
   REG_DISPCNT = MODE_0 | BG0_ON | BG1_ON | BG2_ON | OBJ_ON | OBJ_1D_MAP;
 }
 
-LevelObject::LevelObject(const u16 *pal, const int pal_len, const uint *tiles,
-                         const int tiles_len, int height, int width,
-                         const u16 *meta_tiles, const u16 *bg0, const u16 *bg1,
-                         const u16 *bg2) {
+void LevelObject::load(const u16 *pal, const int pal_len, const uint *tiles,
+                       const int tiles_len, int height, int width,
+                       const u16 *meta_tiles, const u16 *bg0, const u16 *bg1,
+                       const u16 *bg2) {
 
   init_backgrounds();
 
@@ -116,8 +116,6 @@ LevelObject::LevelObject(const u16 *pal, const int pal_len, const uint *tiles,
 }
 
 void LevelObject::update(u16 counter) {
-  input.update(counter);
-
   int x = 0;
   int y = 0;
 
@@ -126,76 +124,77 @@ void LevelObject::update(u16 counter) {
   if (input.down(KEY_RIGHT))
     x += 1;
   if (input.down(KEY_UP))
-    y += 1;
-  if (input.down(KEY_DOWN))
     y -= 1;
+  if (input.down(KEY_DOWN))
+    y += 1;
 
   move_viewport(x, y);
 }
 
 void LevelObject::move_viewport(int d_x, int d_y) {
-  // int new_x = viewport.x() + d_x;
-  // int new_y = viewport.y() + d_y;
-
-  // if (new_x < 0) {
-  //   _at_left_edge = true;
-  //   new_x = 0;
-  // } else {
-  //   _at_left_edge = false;
-  // }
-
-  // if (new_x + viewport.width() > size_px.width()) {
-  //   _at_right_edge = true;
-  //   new_x = size_px.width() - viewport.width();
-  // } else {
-  //   _at_right_edge = false;
-  // }
-
-  // if (new_y < 0) {
-  //   _at_top_edge = true;
-  //   new_y = 0;
-  // } else {
-  //   _at_top_edge = false;
-  // }
-
-  // if (new_y + viewport.height() > size_px.height()) {
-  //   _at_bottom_edge = true;
-  //   new_y = size_px.height() - viewport.height();
-  // } else {
-  //   _at_bottom_edge = false;
-  // }
-
-  // int diff_x = new_x - viewport.x();
-  // int diff_y = new_y - viewport.y();
-
   int new_x = viewport.x() + d_x;
   int new_y = viewport.y() + d_y;
 
-  int diff_x = d_x;
-  int diff_y = d_y;
+  if (new_x < 0) {
+    _at_left_edge = true;
+    new_x = 0;
+  } else {
+    _at_left_edge = false;
+  }
+
+  if (new_x + viewport.width() > size_px.width()) {
+    _at_right_edge = true;
+    new_x = size_px.width() - viewport.width();
+  } else {
+    _at_right_edge = false;
+  }
+
+  if (new_y < 0) {
+    _at_top_edge = true;
+    new_y = 0;
+  } else {
+    _at_top_edge = false;
+  }
+
+  if (new_y + viewport.height() > size_px.height()) {
+    _at_bottom_edge = true;
+    new_y = size_px.height() - viewport.height();
+  } else {
+    _at_bottom_edge = false;
+  }
+
+  int diff_x = new_x - viewport.x();
+  int diff_y = new_y - viewport.y();
 
   viewport.set_x(new_x);
   viewport.set_y(new_y);
 
   if (diff_x < 0) {
     auto val = (u16)(0 - diff_x);
-    REG_BG0HOFS -= val;
-    REG_BG1HOFS -= val;
-    REG_BG2HOFS -= val;
+    bg0_hscroll -= val;
+    bg1_hscroll -= val;
+    bg2_hscroll -= val;
   } else if (diff_x > 0) {
-    REG_BG0HOFS += diff_x;
-    REG_BG1HOFS += diff_x;
-    REG_BG2HOFS += diff_x;
+    bg0_hscroll += diff_x;
+    bg1_hscroll += diff_x;
+    bg2_hscroll += diff_x;
   }
 
   if (diff_y < 0) {
     auto val = (u16)(0 - diff_y);
-    REG_BG0VOFS -= val;
-    REG_BG1VOFS -= val;
-    REG_BG2VOFS -= val;
+    bg0_vscroll -= val;
+    bg1_vscroll -= val;
+    bg2_vscroll -= val;
   } else if (diff_y > 0) {
-    REG_BG0VOFS += diff_x;
-    REG_BG1VOFS += diff_x;
-    REG_BG2VOFS += diff_x;
+    bg0_vscroll += diff_y;
+    bg1_vscroll += diff_y;
+    bg2_vscroll += diff_y;
   }
+
+  REG_BG0HOFS = bg0_hscroll;
+  REG_BG0VOFS = bg0_vscroll;
+  REG_BG1HOFS = bg1_hscroll;
+  REG_BG1VOFS = bg1_vscroll;
+  REG_BG2HOFS = bg2_hscroll;
+  REG_BG2VOFS = bg2_vscroll;
 }

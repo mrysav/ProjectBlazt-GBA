@@ -4,14 +4,14 @@
 #include <gba_interrupt.h>
 #include <gba_systemcalls.h>
 
-// Game States
-#include "game.h"
-#include "menu.h"
-
 // Utilities
 #include "display.h"
 #include "state.h"
 #include "util.h"
+
+// Game States
+#include "game.h"
+#include "menu.h"
 
 int main() {
   // the vblank interrupt must be enabled for VBlankIntrWait() to work

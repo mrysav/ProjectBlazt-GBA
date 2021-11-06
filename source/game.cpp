@@ -92,14 +92,14 @@ void clear_sprites() {
 
 OBJATTR oam_object_backbuffer[128];
 
-GameState::GameState() : player(PlayerObject(&oam_object_backbuffer[0])) {}
+GameState::GameState()
+    : player(PlayerObject(&oam_object_backbuffer[0])), level(input) {}
 
 void GameState::load() {
 
-  level =
-      LevelObject(im_bg_basicPal, im_bg_basicPalLen, im_bg_basicTiles,
-                  im_bg_basicTilesLen, LEVEL_1_HEIGHT, LEVEL_1_WIDTH,
-                  im_bg_basicMetaTiles, LEVEL_1_BG0, LEVEL_1_BG1, LEVEL_1_BG2);
+  level.load(im_bg_basicPal, im_bg_basicPalLen, im_bg_basicTiles,
+             im_bg_basicTilesLen, LEVEL_1_HEIGHT, LEVEL_1_WIDTH,
+             im_bg_basicMetaTiles, LEVEL_1_BG0, LEVEL_1_BG1, LEVEL_1_BG2);
 
   // clear_sprites(); // ?
 }
@@ -204,7 +204,7 @@ void GameState::unload() { clear_sprites(); }
 // }
 
 StateType GameState::update() {
-
+  input.update(counter);
   level.update(counter);
   player.update(counter);
 

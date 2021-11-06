@@ -6,10 +6,11 @@
 
 class LevelObject {
 public:
-  LevelObject(){};
-  LevelObject(const u16 *pal, const int pal_len, const uint *tiles,
-              const int tiles_len, int height, int width, const u16 *meta_tiles,
-              const u16 *bg0, const u16 *bg1, const u16 *bg2);
+  LevelObject(PlayerInputComponent &input) : input(input){};
+
+  void load(const u16 *pal, const int pal_len, const uint *tiles,
+            const int tiles_len, int height, int width, const u16 *meta_tiles,
+            const u16 *bg0, const u16 *bg1, const u16 *bg2);
 
   void update(u16 counter);
 
@@ -29,7 +30,7 @@ private:
   void load_tile_palette(const u16 *pal, const int pal_len, const uint *tiles,
                          const int tiles_len);
 
-  PlayerInputComponent input = PlayerInputComponent();
+  PlayerInputComponent &input;
 
   bool _initialized = false;
 
@@ -45,4 +46,11 @@ private:
   u16 *bg0;
   u16 *bg1;
   u16 *bg2;
+
+  u16 bg0_vscroll = 0;
+  u16 bg0_hscroll = 0;
+  u16 bg1_vscroll = 0;
+  u16 bg1_hscroll = 0;
+  u16 bg2_vscroll = 0;
+  u16 bg2_hscroll = 0;
 };

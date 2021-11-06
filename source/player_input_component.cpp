@@ -7,11 +7,11 @@ u16 PlayerInputComponent::_keys = 0;
 u16 PlayerInputComponent::_lastUpdate = 0;
 
 void PlayerInputComponent::update(u16 counter) {
-  if (counter == _lastUpdate)
-    return;
+  // if (counter == _lastUpdate)
+  //   return;
 
   _last_keys = _keys;
-  _keys = keysDown();
+  _keys = keysHeld();
   _lastUpdate = counter;
 }
 
