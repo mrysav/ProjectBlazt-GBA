@@ -14,7 +14,7 @@ public:
 
 private:
   // Really need to have a global player input
-  PlayerInputComponent input = PlayerInputComponent();
+  PlayerInputComponent input;
   PlayerObject player;
   LevelObject level;
 

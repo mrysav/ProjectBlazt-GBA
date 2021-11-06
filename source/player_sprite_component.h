@@ -5,8 +5,7 @@
 
 class PlayerSpriteComponent {
 public:
-  PlayerSpriteComponent(OBJATTR *attribs);
-
+  void load(OBJATTR *attribs);
   void update(u16 counter, PositionComponent &position);
 
   Rectangle &hitbox() { return _hitbox; }

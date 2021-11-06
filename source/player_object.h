@@ -7,14 +7,11 @@
 
 class PlayerObject {
 public:
-  PlayerObject(OBJATTR *spriteAttribs)
-      : sprite(PlayerSpriteComponent(spriteAttribs)) {}
-
-  void update(u16 counter);
+  void load(OBJATTR *spriteAttribs);
+  void update(u16 counter, PlayerInputComponent &input);
 
 private:
-  PhysicsComponent physics = PhysicsComponent();
-  PlayerInputComponent input = PlayerInputComponent();
+  PhysicsComponent physics;
   PlayerSpriteComponent sprite;
-  PositionComponent position = PositionComponent();
+  PositionComponent position;
 };

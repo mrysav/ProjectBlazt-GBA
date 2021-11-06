@@ -29,8 +29,7 @@ const int walk_seq[WALK_SEQ_LEN] = {0, 1, 0, -1};
 #define STANDING_LEFT 48
 #define WALKING_LEFT 48
 
-PlayerSpriteComponent::PlayerSpriteComponent(OBJATTR *attribs) {
-
+void PlayerSpriteComponent::load(OBJATTR *attribs) {
   // TODO: Support palette and gfx offsets for loading tiles in
   dmaCopy(im_spr_dangerous_davePal, SPRITE_PALETTE,
           im_spr_dangerous_davePalLen);

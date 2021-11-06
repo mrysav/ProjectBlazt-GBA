@@ -46,7 +46,4 @@ StateType MenuState::update() {
   return MENU;
 }
 
-void MenuState::unload() {
-  // just clear the screen
-  consoleDemoInit();
-}
+void MenuState::unload() {}
