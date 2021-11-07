@@ -3,6 +3,9 @@
 #include "level_object.h"
 #include "util.h"
 
+#define TILE_WIDTH 16
+#define TILE_HEIGHT 16
+
 /*!
  * Get the screen entry index for a tile-coord pair.
  * This is the fast (and possibly unsafe) way.
@@ -100,10 +103,14 @@ void LevelObject::load(const u16 *pal, const int pal_len, const uint *tiles,
   init_backgrounds();
 
   size_tiles = Rectangle(0, 0, width, height);
-  size_px = Rectangle(0, 0, width * 16, height * 16);
+  size_px = Rectangle(0, 0, width * TILE_WIDTH, height * TILE_HEIGHT);
   viewport = Rectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
 
   load_tile_palette(pal, pal_len, tiles, tiles_len);
+
+  this->bg0 = bg0;
+  this->bg1 = bg1;
+  this->bg2 = bg2;
 
   load_tiles((u16 *)SCREEN_BASE_BLOCK(4), REG_BG0CNT, meta_tiles, bg0, height,
              width);
@@ -115,21 +122,7 @@ void LevelObject::load(const u16 *pal, const int pal_len, const uint *tiles,
   _initialized = true;
 }
 
-void LevelObject::update(u16 counter) {
-  int x = 0;
-  int y = 0;
-
-  if (input.down(KEY_LEFT))
-    x -= 1;
-  if (input.down(KEY_RIGHT))
-    x += 1;
-  if (input.down(KEY_UP))
-    y -= 1;
-  if (input.down(KEY_DOWN))
-    y += 1;
-
-  move_viewport(x, y);
-}
+void LevelObject::update(PlayerInputComponent &input) {}
 
 void LevelObject::move_viewport(int d_x, int d_y) {
   int new_x = viewport.x() + d_x;
@@ -197,4 +190,70 @@ void LevelObject::move_viewport(int d_x, int d_y) {
   REG_BG1VOFS = bg1_vscroll;
   REG_BG2HOFS = bg2_hscroll;
   REG_BG2VOFS = bg2_vscroll;
+}
+
+ResolvedMovement LevelObject::resolve_collision(Rectangle &hitbox, int xvel,
+                                                int yvel) {
+  ResolvedMovement res;
+
+  int xedge = 0;
+  if (xvel > 0) {
+    xedge = hitbox.x() + hitbox.width() - 1;
+  } else if (xvel < 0) {
+    xedge = hitbox.x();
+  }
+
+  // maximum distance you can travel in the x axis before collision
+  int xdist = xvel;
+
+  int tileX = (xedge + xvel) / TILE_WIDTH;
+  int topTileY = hitbox.y() / TILE_HEIGHT;
+  int botTileY = (hitbox.y() + hitbox.height() - 1) / TILE_HEIGHT;
+  // bool collides = false;
+  for (int t = topTileY; t <= botTileY; t++) {
+    uint idx = t * size_tiles.width() + tileX;
+    if (bg1[idx] > 0) {
+      int t_px = t * TILE_WIDTH;
+      if (xvel < 0) {
+        xdist = t_px + TILE_WIDTH - xedge;
+      } else if (xvel > 0) {
+        xdist = t_px - xedge;
+      }
+      break;
+    }
+  }
+
+  res.x_dist = xdist;
+
+  int yedge = 0;
+  if (yvel > 0) {
+    yedge = hitbox.y() + hitbox.height() - 1;
+  } else if (yvel < 0) {
+    yedge = hitbox.y();
+  }
+
+  // maximum distance you can go in the y axis before collision
+  int ydist = yvel;
+
+  int tileY = (yedge + yvel) / TILE_HEIGHT;
+  int leftTileX = hitbox.x() / TILE_WIDTH;
+  int rightTileX = (hitbox.x() + hitbox.width() - 1) / TILE_WIDTH;
+  for (int t = leftTileX; t <= rightTileX; t++) {
+    uint idx = tileY * size_tiles.width() + t;
+    if (bg1[idx] > 0) {
+      int t_px = idx / size_tiles.width() * TILE_HEIGHT;
+
+      if (yvel < 0) {
+        ydist = t_px + TILE_HEIGHT - yedge;
+      } else if (yvel > 0) {
+        ydist = t_px - yedge;
+      }
+
+      break;
+    }
+  }
+
+  res.y_dist = ydist;
+
+  return res;
 }

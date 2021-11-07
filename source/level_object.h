@@ -1,20 +1,28 @@
 #pragma once
 
 #include "player_input_component.h"
+#include "position_component.h"
 #include "rectangle.h"
 #include "util.h"
 
+struct ResolvedMovement {
+  int x_dist;
+  int y_dist;
+};
+
 class LevelObject {
 public:
-  LevelObject(PlayerInputComponent &input) : input(input){};
+  LevelObject(){};
 
   void load(const u16 *pal, const int pal_len, const uint *tiles,
             const int tiles_len, int height, int width, const u16 *meta_tiles,
             const u16 *bg0, const u16 *bg1, const u16 *bg2);
 
-  void update(u16 counter);
+  void update(PlayerInputComponent &input);
 
   void move_viewport(int d_x, int d_y);
+
+  ResolvedMovement resolve_collision(Rectangle &hitbox, int xvel, int yvel);
 
   bool initialized() { return _initialized; }
 
@@ -30,8 +38,6 @@ private:
   void load_tile_palette(const u16 *pal, const int pal_len, const uint *tiles,
                          const int tiles_len);
 
-  PlayerInputComponent &input;
-
   bool _initialized = false;
 
   bool _at_right_edge = false;
@@ -43,9 +49,9 @@ private:
   Rectangle size_px;
   Rectangle viewport;
 
-  u16 *bg0;
-  u16 *bg1;
-  u16 *bg2;
+  const u16 *bg0;
+  const u16 *bg1;
+  const u16 *bg2;
 
   u16 bg0_vscroll = 0;
   u16 bg0_hscroll = 0;

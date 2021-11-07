@@ -8,7 +8,7 @@
 class PlayerObject {
 public:
   void load(OBJATTR *spriteAttribs);
-  void update(u16 counter, PlayerInputComponent &input);
+  void update(u16 &counter, PlayerInputComponent &input, LevelObject &level);
 
 private:
   PhysicsComponent physics;

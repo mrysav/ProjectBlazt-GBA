@@ -58,6 +58,11 @@ uint max_camera_y;
 // Rect camera = {-CENTER_PLAYER_SCREEN_X, -CENTER_PLAYER_SCREEN_Y,
 // SCREEN_WIDTH, SCREEN_HEIGHT};
 
+// CENTER_PLAYER_SCREEN_X = (SCREEN_WIDTH / 2) - (PLAYER_SPRITE_WIDTH / 2);
+#define CENTER_PLAYER_SCREEN_X 112
+// CENTER_PLAYER_SCREEN_Y = SCREEN_HEIGHT - (PLAYER_SPRITE_HEIGHT * 3);
+#define CENTER_PLAYER_SCREEN_Y 112
+
 int numEnem = 0;
 
 typedef struct level_data {
@@ -92,7 +97,7 @@ void clear_sprites() {
 
 OBJATTR oam_object_backbuffer[128];
 
-GameState::GameState() : level(input) {}
+GameState::GameState() {}
 
 void GameState::load() {
 
@@ -205,9 +210,9 @@ void GameState::unload() { clear_sprites(); }
 // }
 
 StateType GameState::update() {
-  input.update(counter);
-  level.update(counter);
-  player.update(counter, input);
+  input.update();
+  level.update(input);
+  player.update(counter, input, level);
 
   OAM[0] = oam_object_backbuffer[0];
 

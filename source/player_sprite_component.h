@@ -5,10 +5,14 @@
 
 class PlayerSpriteComponent {
 public:
-  void load(OBJATTR *attribs);
+  void load(OBJATTR *attribs, PositionComponent &PositionComponent);
   void update(u16 counter, PositionComponent &position);
 
   Rectangle &hitbox() { return _hitbox; }
+
+  void setFacingLeft(bool facingLeft) { facingLeft = facingLeft; }
+  void setJumping(bool jumping) { jumping = jumping; }
+  void setMoving(bool moving) { moving = moving; }
 
 private:
   OBJATTR *spriteAttribs;

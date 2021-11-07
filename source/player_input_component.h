@@ -4,7 +4,7 @@
 
 class PlayerInputComponent {
 public:
-  void update(u16 counter);
+  void update();
 
   bool down(u16 keys);
   bool up(u16 keys);
@@ -13,5 +13,4 @@ public:
 private:
   static u16 _last_keys;
   static u16 _keys;
-  static u16 _lastUpdate;
 };
