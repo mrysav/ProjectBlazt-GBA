@@ -5,9 +5,10 @@
 #include "rectangle.h"
 #include "util.h"
 
-struct ResolvedMovement {
-  int x_dist;
-  int y_dist;
+class ResolvedMovement {
+public:
+  int x_dist = 0;
+  int y_dist = 0;
 };
 
 class LevelObject {

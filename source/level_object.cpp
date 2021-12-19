@@ -128,33 +128,33 @@ void LevelObject::move_viewport(int d_x, int d_y) {
   int new_x = viewport.x() + d_x;
   int new_y = viewport.y() + d_y;
 
-  if (new_x < 0) {
-    _at_left_edge = true;
-    new_x = 0;
-  } else {
-    _at_left_edge = false;
-  }
+  // if (new_x < 0) {
+  //   _at_left_edge = true;
+  //   new_x = 0;
+  // } else {
+  //   _at_left_edge = false;
+  // }
 
-  if (new_x + viewport.width() > size_px.width()) {
-    _at_right_edge = true;
-    new_x = size_px.width() - viewport.width();
-  } else {
-    _at_right_edge = false;
-  }
+  // if (new_x + viewport.width() > size_px.width()) {
+  //   _at_right_edge = true;
+  //   new_x = size_px.width() - viewport.width();
+  // } else {
+  //   _at_right_edge = false;
+  // }
 
-  if (new_y < 0) {
-    _at_top_edge = true;
-    new_y = 0;
-  } else {
-    _at_top_edge = false;
-  }
+  // if (new_y < 0) {
+  //   _at_top_edge = true;
+  //   new_y = 0;
+  // } else {
+  //   _at_top_edge = false;
+  // }
 
-  if (new_y + viewport.height() > size_px.height()) {
-    _at_bottom_edge = true;
-    new_y = size_px.height() - viewport.height();
-  } else {
-    _at_bottom_edge = false;
-  }
+  // if (new_y + viewport.height() > size_px.height()) {
+  //   _at_bottom_edge = true;
+  //   new_y = size_px.height() - viewport.height();
+  // } else {
+  //   _at_bottom_edge = false;
+  // }
 
   int diff_x = new_x - viewport.x();
   int diff_y = new_y - viewport.y();
@@ -196,64 +196,73 @@ ResolvedMovement LevelObject::resolve_collision(Rectangle &hitbox, int xvel,
                                                 int yvel) {
   ResolvedMovement res;
 
-  int xedge = 0;
-  if (xvel > 0) {
-    xedge = hitbox.x() + hitbox.width() - 1;
-  } else if (xvel < 0) {
-    xedge = hitbox.x();
-  }
+  if (xvel != 0) {
 
-  // maximum distance you can travel in the x axis before collision
-  int xdist = xvel;
-
-  int tileX = (xedge + xvel) / TILE_WIDTH;
-  int topTileY = hitbox.y() / TILE_HEIGHT;
-  int botTileY = (hitbox.y() + hitbox.height() - 1) / TILE_HEIGHT;
-  // bool collides = false;
-  for (int t = topTileY; t <= botTileY; t++) {
-    uint idx = t * size_tiles.width() + tileX;
-    if (bg1[idx] > 0) {
-      int t_px = t * TILE_WIDTH;
-      if (xvel < 0) {
-        xdist = t_px + TILE_WIDTH - xedge;
-      } else if (xvel > 0) {
-        xdist = t_px - xedge;
-      }
-      break;
+    int xedge = 0;
+    if (xvel > 0) {
+      xedge = hitbox.x() + hitbox.width() - 1;
+    } else if (xvel < 0) {
+      xedge = hitbox.x();
     }
-  }
 
-  res.x_dist = xdist;
-
-  int yedge = 0;
-  if (yvel > 0) {
-    yedge = hitbox.y() + hitbox.height() - 1;
-  } else if (yvel < 0) {
-    yedge = hitbox.y();
-  }
-
-  // maximum distance you can go in the y axis before collision
-  int ydist = yvel;
-
-  int tileY = (yedge + yvel) / TILE_HEIGHT;
-  int leftTileX = hitbox.x() / TILE_WIDTH;
-  int rightTileX = (hitbox.x() + hitbox.width() - 1) / TILE_WIDTH;
-  for (int t = leftTileX; t <= rightTileX; t++) {
-    uint idx = tileY * size_tiles.width() + t;
-    if (bg1[idx] > 0) {
-      int t_px = idx / size_tiles.width() * TILE_HEIGHT;
-
-      if (yvel < 0) {
-        ydist = t_px + TILE_HEIGHT - yedge;
-      } else if (yvel > 0) {
-        ydist = t_px - yedge;
+    bool x_collide = false;
+    int tileX = (xedge + xvel) / TILE_WIDTH;
+    int topTileY = hitbox.y() / TILE_HEIGHT;
+    int botTileY = (hitbox.y() + hitbox.height() - 1) / TILE_HEIGHT;
+    for (int t = topTileY; t <= botTileY; t++) {
+      uint idx = t * size_tiles.width() + tileX;
+      if (bg1[idx] > 0) {
+        x_collide = true;
+        break;
       }
-
-      break;
     }
+
+    // // maximum distance you can travel in the x axis before collision
+    // int xdist = xvel;
+
+    if (!x_collide) {
+      res.x_dist = xvel;
+    } // else {
+    //   int t_px = tileX * TILE_WIDTH;
+    //   if (xvel < 0) {
+    //     res.x_dist = t_px + TILE_WIDTH - xedge;
+    //   } else if (xvel > 0) {
+    //     res.x_dist = t_px - xedge;
+    //   }
+    // }
   }
 
-  res.y_dist = ydist;
+  if (yvel != 0) {
+    int yedge = 0;
+    if (yvel > 0) {
+      yedge = hitbox.y() + hitbox.height() - 1;
+    } else if (yvel < 0) {
+      yedge = hitbox.y();
+    }
+
+    // maximum distance you can go in the y axis before collision
+    int ydist = yvel;
+
+    int tileY = (yedge + yvel) / TILE_HEIGHT;
+    int leftTileX = hitbox.x() / TILE_WIDTH;
+    int rightTileX = (hitbox.x() + hitbox.width() - 1) / TILE_WIDTH;
+    for (int t = leftTileX; t <= rightTileX; t++) {
+      uint idx = tileY * size_tiles.width() + t;
+      if (bg1[idx] > 0) {
+        int t_px = tileY * TILE_HEIGHT;
+
+        if (yvel < 0) {
+          ydist = t_px + TILE_HEIGHT - yedge;
+        } else if (yvel > 0) {
+          ydist = t_px - yedge;
+        }
+
+        break;
+      }
+    }
+
+    res.y_dist = ydist;
+  }
 
   return res;
 }

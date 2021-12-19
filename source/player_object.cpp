@@ -12,6 +12,8 @@ void PlayerObject::load(OBJATTR *spriteAttribs) {
 
   position.set_x(CENTER_PLAYER_SCREEN_X);
   position.set_y(CENTER_PLAYER_SCREEN_Y);
+  // position.set_x(0);
+  // position.set_y(0);
 
   sprite.load(spriteAttribs, position);
 }
