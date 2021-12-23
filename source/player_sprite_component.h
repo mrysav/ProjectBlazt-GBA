@@ -10,9 +10,10 @@ public:
 
   Rectangle &hitbox() { return _hitbox; }
 
-  void setFacingLeft(bool facingLeft) { facingLeft = facingLeft; }
-  void setJumping(bool jumping) { jumping = jumping; }
-  void setMoving(bool moving) { moving = moving; }
+  void setFacingLeft(bool facingLeft) { this->facingLeft = facingLeft; }
+  void setJumping(bool jumping) { this->jumping = jumping; }
+  bool isJumping() { return this->jumping; }
+  void setMoving(bool moving) { this->moving = moving; }
 
 private:
   OBJATTR *spriteAttribs;

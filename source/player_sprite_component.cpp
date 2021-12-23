@@ -67,26 +67,24 @@ void PlayerSpriteComponent::update(u16 counter, PositionComponent &position) {
   _hitbox.set_x(position.get_x() + HITBOX_OFF_X);
   _hitbox.set_y(position.get_y() + HITBOX_OFF_Y);
 
-  // only animate once every 8 frames
-  if (counter > (lastUpdate + 16)) {
-
-    if (jumping) {
-      firstFrame = facingLeft ? JUMPING_LEFT : JUMPING_RIGHT;
-      animFrame = 0;
-    } else if (moving) {
-      firstFrame = facingLeft ? WALKING_LEFT : WALKING_RIGHT;
+  if (jumping) {
+    firstFrame = facingLeft ? JUMPING_LEFT : JUMPING_RIGHT;
+    animFrame = 0;
+  } else if (moving) {
+    firstFrame = facingLeft ? WALKING_LEFT : WALKING_RIGHT;
+    // only animate once every 8 frames
+    if (counter > (lastUpdate + 8)) {
       animSeq = animSeq + 1;
       if (animSeq >= WALK_SEQ_LEN) {
         animSeq = 0; // avoid modulo
       }
       animFrame = walk_seq[animSeq];
-    } else {
-      firstFrame = facingLeft ? STANDING_LEFT : STANDING_RIGHT;
-      animFrame = 0;
+      lastUpdate = counter;
     }
-
-    spriteAttribs->attr2 = firstFrame + (animFrame * 8);
-
-    lastUpdate = counter;
+  } else {
+    firstFrame = facingLeft ? STANDING_LEFT : STANDING_RIGHT;
+    animFrame = 0;
   }
+
+  spriteAttribs->attr2 = firstFrame + (animFrame * 8);
 }

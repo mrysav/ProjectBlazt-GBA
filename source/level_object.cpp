@@ -208,7 +208,9 @@ ResolvedMovement LevelObject::resolve_collision(Rectangle &hitbox, int xvel,
     bool x_collide = false;
     int tileX = (xedge + xvel) / TILE_WIDTH;
     int topTileY = hitbox.y() / TILE_HEIGHT;
-    int botTileY = (hitbox.y() + hitbox.height() - 1) / TILE_HEIGHT;
+    int botTileY = (hitbox.y() + hitbox.height()) % TILE_HEIGHT > 0
+                       ? topTileY + 1
+                       : topTileY;
     for (int t = topTileY; t <= botTileY; t++) {
       uint idx = t * size_tiles.width() + tileX;
       if (bg1[idx] > 0) {
@@ -235,7 +237,7 @@ ResolvedMovement LevelObject::resolve_collision(Rectangle &hitbox, int xvel,
   if (yvel != 0) {
     int yedge = 0;
     if (yvel > 0) {
-      yedge = hitbox.y() + hitbox.height() - 1;
+      yedge = hitbox.y() + hitbox.height();
     } else if (yvel < 0) {
       yedge = hitbox.y();
     }
@@ -245,7 +247,7 @@ ResolvedMovement LevelObject::resolve_collision(Rectangle &hitbox, int xvel,
 
     int tileY = (yedge + yvel) / TILE_HEIGHT;
     int leftTileX = hitbox.x() / TILE_WIDTH;
-    int rightTileX = (hitbox.x() + hitbox.width() - 1) / TILE_WIDTH;
+    int rightTileX = (hitbox.x() + hitbox.width()) / TILE_WIDTH;
     for (int t = leftTileX; t <= rightTileX; t++) {
       uint idx = tileY * size_tiles.width() + t;
       if (bg1[idx] > 0) {
