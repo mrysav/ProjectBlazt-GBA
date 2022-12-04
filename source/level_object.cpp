@@ -7,52 +7,6 @@
 #define TILE_WIDTH 16
 #define TILE_HEIGHT 16
 
-/*!
- * Get the screen entry index for a tile-coord pair.
- * This is the fast (and possibly unsafe) way.
- * Lifted from:
- * https://www.coranac.com/tonc/text/regbg.htm
- *  \param bgcnt    Control flags for this background (to find its size)
- */
-uint se_index_fast(uint tx, uint ty, u16 bgcnt) {
-  uint n = tx + ty * 32;
-  if (tx >= 32)
-    n += 0x03E0; // Size of one screenblock (in tiles) - Size of one row of
-                 // tiles (1024-32)
-  if (ty >= 32 && (bgcnt & BG_SIZE_3) == BG_SIZE_3)
-    n += 0x0400; // Size of one screenblock (1024)
-  return n;
-}
-
-/*!
- * Paints a single layer of 16x16 tiles to memory.
- * \param base_sb Base screenblock entry to start painting at.
- * \param bgcnt Background control register you're painting to.
- * \param tileset Array containing the reduced tiles to paint.
- * \param tiles The actual map data that references the tileset.
- * \param height The height of the map (in 16x16 tiles)
- * \param width The width of the map (in 16x16 tiles)
- */
-void LevelObject::load_tiles(u16 *base_sb, u16 bgcnt, const u16 *tileset,
-                             const u16 *tiles, int height, int width) {
-  for (int y = 0; y < height; y++) {
-    for (int x = 0; x < width; x++) {
-      uint screenblock = se_index_fast(x * 2, y * 2, bgcnt);
-      u16 *dest = base_sb + screenblock;
-
-      u16 tile = tiles[y * width + x];
-      u16 base_idx = tile * 4;
-      for (uint i = 0; i < 2; i++) {
-        u16 o1 = tileset[base_idx + i];
-        u16 o2 = tileset[base_idx + i + 2];
-        dest[i] = o1;
-        // width of a screenblock
-        dest[32 + i] = o2;
-      }
-    }
-  }
-}
-
 void LevelObject::load_tile_palette(const u16 *pal, const int pal_len,
                                     const uint *tiles, const int tiles_len) {
   // TODO: specify char base block
@@ -108,19 +62,7 @@ void LevelObject::load(const u16 *pal, const int pal_len, const uint *tiles,
   load_tiles((u16 *)SCREEN_BASE_BLOCK(8), REG_BG1CNT, meta_tiles, bg1, height,
              width);
 
-  // initialize HUD text console into BG2
-  // consoleInit(1, 11, 2, NULL, 0, 15);
-
-  // load in the HUD
-  load_tiles((u16 *)SCREEN_BASE_BLOCK(12), REG_BG2CNT, meta_tiles, HUD_BG,
-             HUD_HEIGHT, HUD_WIDTH);
-
-  REG_BG2CNT =
-      0 |                 /* priority, 0 is highest, 3 is lowest */
-      (CHAR_BASE(0)) |    /* the char block the image data is stored in */
-      (BG_256_COLOR) |    /* color mode, 0 is 16 colors, 1 is 256 colors */
-      (SCREEN_BASE(12)) | /* the screen block the tile data is stored in */
-      (BG_SIZE_3);        /* bg size 3 is 512x512 */
+  hud.initialize();
 
   _initialized = true;
 }

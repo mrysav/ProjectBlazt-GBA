@@ -1,5 +1,6 @@
 #pragma once
 
+#include "hud.h"
 #include "player_input_component.h"
 #include "position_component.h"
 #include "rectangle.h"
@@ -34,8 +35,6 @@ public:
 
 private:
   void init_backgrounds();
-  void load_tiles(u16 *base_sb, u16 bgcnt, const u16 *tileset, const u16 *tiles,
-                  int height, int width);
   void load_tile_palette(const u16 *pal, const int pal_len, const uint *tiles,
                          const int tiles_len);
 
@@ -57,4 +56,6 @@ private:
   u16 bg0_hscroll = 0;
   u16 bg1_vscroll = 0;
   u16 bg1_hscroll = 0;
+
+  HudComponent hud;
 };

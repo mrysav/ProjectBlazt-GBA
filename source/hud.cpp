@@ -1,6 +1,8 @@
+#include <gba.h>
 #include <stdint.h>
 
 #include "hud.h"
+#include "im_bg_basic.h"
 
 const uint16_t HUD_BG[150] = {
     0x0, 0x0, 0x0, 0x0, 0x0, 0x0,  0x0,  0x0,  0x0,  0x0, 0x0, 0x0, 0x0, 0x0,
@@ -15,3 +17,18 @@ const uint16_t HUD_BG[150] = {
     0x4, 0x4, 0x4, 0x4, 0x4, 0x4,  0x4,  0x4,  0x4,  0x4, 0x4, 0x4, 0x4, 0x4,
     0x4, 0x4, 0x4, 0x4, 0x4, 0x11, 0x11, 0x11, 0x11, 0x4,
 };
+
+void HudComponent::initialize() {
+  // load in the HUD
+  load_tiles((u16 *)SCREEN_BASE_BLOCK(12), REG_BG2CNT, im_bg_basicMetaTiles,
+             HUD_BG, HUD_HEIGHT, HUD_WIDTH);
+
+  REG_BG2CNT =
+      0 |                 /* priority, 0 is highest, 3 is lowest */
+      (CHAR_BASE(0)) |    /* the char block the image data is stored in */
+      (BG_256_COLOR) |    /* color mode, 0 is 16 colors, 1 is 256 colors */
+      (SCREEN_BASE(12)) | /* the screen block the tile data is stored in */
+      (BG_SIZE_3);        /* bg size 3 is 512x512 */
+}
+
+void HudComponent::update(uint timer_value, uint score) {}
