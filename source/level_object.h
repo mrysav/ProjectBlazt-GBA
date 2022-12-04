@@ -17,7 +17,7 @@ public:
 
   void load(const u16 *pal, const int pal_len, const uint *tiles,
             const int tiles_len, int height, int width, const u16 *meta_tiles,
-            const u16 *bg0, const u16 *bg1, const u16 *bg2);
+            const u16 *bg0, const u16 *bg1);
 
   void update(PlayerInputComponent &input);
 
@@ -52,12 +52,9 @@ private:
 
   const u16 *bg0;
   const u16 *bg1;
-  const u16 *bg2;
 
   u16 bg0_vscroll = 0;
   u16 bg0_hscroll = 0;
   u16 bg1_vscroll = 0;
   u16 bg1_hscroll = 0;
-  u16 bg2_vscroll = 0;
-  u16 bg2_hscroll = 0;
 };

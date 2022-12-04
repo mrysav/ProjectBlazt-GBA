@@ -12,6 +12,9 @@
 #include "level_1.h"
 #include "map_mario_1.h"
 
+// Game objects
+#include "hud.h"
+
 // Utilities
 #include "display.h"
 #include "util.h"
@@ -55,7 +58,7 @@ void GameState::load() {
 
   level.load(im_bg_basicPal, im_bg_basicPalLen, im_bg_basicTiles,
              im_bg_basicTilesLen, LEVEL_1_HEIGHT, LEVEL_1_WIDTH,
-             im_bg_basicMetaTiles, LEVEL_1_BG0, LEVEL_1_BG1, LEVEL_1_BG2);
+             im_bg_basicMetaTiles, LEVEL_1_BG0, LEVEL_1_BG1);
 }
 
 void GameState::unload() { clear_sprites(); }

@@ -3,16 +3,16 @@
 
 //======================================================================
 //
-//	im_bg_basic, 256x256@8,
+//	im_bg_basic, 256x256@8, 
 //	Transparent color : FF,00,E1
 //	+ palette 256 entries, not compressed
-//	+ 13 tiles (t|f reduced) not compressed
-//	+ regular map (in SBBs), not compressed, 16x16
+//	+ 43 tiles (t|f reduced) not compressed
+//	+ regular map (in SBBs), not compressed, 16x16 
 //	Metatiled by 2x2
-//	Total size: 512 + 832 + 64 + 512 = 1920
+//	Total size: 512 + 2752 + 128 + 512 = 3904
 //
-//	Time-stamp: 2021-07-05, 15:05:12
-//	Exported by Cearn's GBA Image Transmogrifier, v0.8.16
+//	Time-stamp: 2022-12-02, 16:43:19
+//	Exported by Cearn's GBA Image Transmogrifier, v0.9.2
 //	( http://www.coranac.com/projects/#grit )
 //
 //======================================================================
@@ -20,11 +20,11 @@
 #ifndef GRIT_IM_BG_BASIC_H
 #define GRIT_IM_BG_BASIC_H
 
-#define im_bg_basicTilesLen 832
-extern const unsigned int im_bg_basicTiles[208];
+#define im_bg_basicTilesLen 2752
+extern const unsigned int im_bg_basicTiles[688];
 
-#define im_bg_basicMetaTilesLen 64
-extern const unsigned short im_bg_basicMetaTiles[32];
+#define im_bg_basicMetaTilesLen 128
+extern const unsigned short im_bg_basicMetaTiles[64];
 
 #define im_bg_basicMetaMapLen 512
 extern const unsigned short im_bg_basicMetaMap[256];
