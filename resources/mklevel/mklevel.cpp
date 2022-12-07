@@ -1,7 +1,6 @@
 #include <bits/stdc++.h>
 #include <cctype>
 #include <csv.h>
-#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <pugixml.hpp>
@@ -113,10 +112,14 @@ void write_c_file(string filename, string map_name, int map_width,
     exit(1);
   }
 
+  auto last_slash = filename.find_last_of('/');
+  if (last_slash == string::npos)
+    last_slash = 0;
+  auto file_basename = filename.substr(last_slash + 1);
+
   outfile << "#include <stdint.h>\n"
           << "\n"
-          << "#include \"" << filesystem::path(filename).stem().generic_string()
-          << ".h\"\n"
+          << "#include \"" << file_basename << ".h\"\n"
           << "\n";
 
   for (size_t l = 0; l < tiledata.size(); l++) {
@@ -157,7 +160,13 @@ int main(int argc, char *argv[]) {
 
   cout << "Loaded file " << infile << ".\n";
 
-  auto basename = filesystem::path(infile).stem().generic_string();
+  auto last_dot = infile.find_last_of('.');
+  auto last_slash = infile.find_last_of('/');
+  if (last_slash == string::npos)
+    last_slash = 0;
+  else
+    last_slash++;
+  auto basename = infile.substr(last_slash, last_dot - last_slash);
 
   auto map = doc.select_node("/map").node();
   auto height = atoi(map.attribute("height").value());
