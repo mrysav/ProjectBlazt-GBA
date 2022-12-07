@@ -1,0 +1,13 @@
+{
+  "build": {
+    "dockerfile": "./Dockerfile",
+    "context": ".."
+  },
+  "extensions": [
+    "ms-vscode.cpptools-extension-pack",
+    "xaver.clang-format",
+    "EditorConfig.EditorConfig",
+    "ms-vscode.makefile-tools",
+    "timonwong.shellcheck"
+  ]
+}
