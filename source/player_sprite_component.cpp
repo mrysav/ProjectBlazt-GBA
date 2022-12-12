@@ -74,10 +74,7 @@ void PlayerSpriteComponent::update(u16 counter, PositionComponent &position) {
     firstFrame = facingLeft ? WALKING_LEFT : WALKING_RIGHT;
     // only animate once every 8 frames
     if (counter > (lastUpdate + 8)) {
-      animSeq = animSeq + 1;
-      if (animSeq >= WALK_SEQ_LEN) {
-        animSeq = 0; // avoid modulo
-      }
+      animSeq = (animSeq + 1) % WALK_SEQ_LEN;
       animFrame = walk_seq[animSeq];
       lastUpdate = counter;
     }

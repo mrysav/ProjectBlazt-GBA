@@ -139,7 +139,7 @@ clean-bg:
 	cd $(SOURCES) && rm $(BGFILES)
 
 clean-sprites:
-	cd $(SOURCES) && rm $(SPRITEFILES)
+	cd $(SOURCES) && rm -f $(SPRITEFILES)
 
 clean-maps:
 	cd $(SOURCES) && rm -f $(MAPFILES)
