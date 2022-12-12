@@ -63,11 +63,21 @@ void LevelObject::load(const u16 *pal, const int pal_len, const uint *tiles,
              width);
 
   hud.initialize();
+  hud.update(30, 1);
 
   _initialized = true;
 }
 
-void LevelObject::update(PlayerInputComponent &input) {}
+void LevelObject::update(u16 &counter, PlayerInputComponent &input) {
+  static u16 lastUpdate = 0;
+  uint timerVal = hud.timer();
+  // running at about 60 fps
+  if (counter - lastUpdate > 60) {
+    timerVal--;
+    lastUpdate = counter;
+  }
+  hud.update(timerVal, 0);
+}
 
 void LevelObject::move_viewport(int d_x, int d_y) {
   int new_x = viewport.x() + d_x;

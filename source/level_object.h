@@ -20,7 +20,7 @@ public:
             const int tiles_len, int height, int width, const u16 *meta_tiles,
             const u16 *bg0, const u16 *bg1);
 
-  void update(PlayerInputComponent &input);
+  void update(u16 &counter, PlayerInputComponent &input);
 
   void move_viewport(int d_x, int d_y);
 

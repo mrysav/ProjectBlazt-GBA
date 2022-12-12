@@ -1,5 +1,6 @@
 #pragma once
 
+#include <gba.h>
 #include <stdint.h>
 
 #include "util.h"
@@ -14,4 +15,13 @@ class HudComponent {
 public:
   void initialize();
   void update(uint timer_value, uint score);
+  u16 &timer() { return _timer; }
+
+private:
+  void update_tile(int x, int y, u16 tile);
+
+  u16 *base_screenblock = (u16 *)SCREEN_BASE_BLOCK(12);
+
+  u16 _timer = 0;
+  u16 _score = 0;
 };

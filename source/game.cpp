@@ -65,7 +65,7 @@ void GameState::unload() { clear_sprites(); }
 
 StateType GameState::update() {
   input.update();
-  level.update(input);
+  level.update(counter, input);
   player.update(counter, input, level);
 
   OAM[0] = oam_object_backbuffer[0];
