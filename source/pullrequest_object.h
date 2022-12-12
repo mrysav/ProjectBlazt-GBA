@@ -9,10 +9,19 @@ public:
   void update(u16 &counter);
   void move(int scroll_x, int scroll_y, Rectangle &viewport);
 
+  bool &active() { return this->_active; }
+  void set_active(bool active) { this->_active = active; }
+  Rectangle &position() { return this->start_position; }
+
 private:
   PullRequestSpriteComponent sprite;
-  // position screen, in relation to the level
-  PositionComponent position;
+
+  // position on screen, in relation to the level
+  PositionComponent _position;
+
   // initial starting position of the object
-  PositionComponent start_position;
+  // which is really the only logical position we care about
+  Rectangle start_position;
+
+  bool _active = true;
 };

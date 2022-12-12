@@ -56,9 +56,9 @@ void GameState::load() {
   pull_requests[0].load(&oam_object_backbuffer[1], 2 * 16, 2 * 16);
   pull_requests[1].load(&oam_object_backbuffer[2], 8 * 16, 2 * 16);
   pull_requests[2].load(&oam_object_backbuffer[3], 5 * 16, 14 * 16);
-  pull_requests[3].load(&oam_object_backbuffer[4], 2 * 16, 2 * 16);
-  pull_requests[4].load(&oam_object_backbuffer[5], 2 * 16, 2 * 16);
-  pull_requests[5].load(&oam_object_backbuffer[6], 2 * 16, 2 * 16);
+  pull_requests[3].load(&oam_object_backbuffer[4], 6 * 16, 29 * 16);
+  pull_requests[4].load(&oam_object_backbuffer[5], 7 * 16, 22 * 16);
+  pull_requests[5].load(&oam_object_backbuffer[6], 7 * 16, 6 * 16);
   pull_requests[6].load(&oam_object_backbuffer[7], 2 * 16, 2 * 16);
   pull_requests[7].load(&oam_object_backbuffer[8], 2 * 16, 2 * 16);
 

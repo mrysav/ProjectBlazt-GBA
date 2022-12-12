@@ -17,8 +17,28 @@ int &Rectangle::height() { return _height; }
 void Rectangle::set_height(int height) { _height = height; }
 
 bool Rectangle::collides(Rectangle &other) {
-  return (_x < other._x + other._width && _x + _width > other._x &&
-          _y < other._y + other._height && _height + _y > other._y);
+  // return (_x < other._x + other._width && _x + _width > other._x &&
+  //         _y < other._y + other._height && _height + _y > other._y);
+
+  auto l1x = _x;
+  auto l1y = _y;
+  auto r1x = _x + _width;
+  auto r1y = _y + _height;
+
+  auto l2x = other._x;
+  auto l2y = other._y;
+  auto r2x = other._x + other._width;
+  auto r2y = other._y + other._height;
+
+  if (l1x > r2x || l2x > r1x) {
+    return false;
+  }
+
+  if (r1y > l2y || r2y > l1y) {
+    return false;
+  }
+
+  return true;
 }
 
 bool Rectangle::contains(int x, int y) {

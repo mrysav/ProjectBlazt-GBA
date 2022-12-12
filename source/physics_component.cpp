@@ -29,10 +29,10 @@ void PhysicsComponent::update(PlayerInputComponent &input,
 
   if (input.down(KEY_A) && !sprite.isJumping()) {
     sprite.setJumping(true);
-    y_velocity = -16;
+    y_velocity = -11;
   }
 
-  if (y_velocity < 3) {
+  if (y_velocity < 2) {
     y_velocity += 1;
   }
 
@@ -55,4 +55,5 @@ void PhysicsComponent::update(PlayerInputComponent &input,
   position.set_y(position.get_y() + res.y_dist);
 
   level.move_viewport(res.x_dist, res.y_dist);
+  level.update_collide(res);
 }

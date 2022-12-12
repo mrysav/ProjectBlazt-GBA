@@ -13,6 +13,8 @@ class ResolvedMovement {
 public:
   int x_dist = 0;
   int y_dist = 0;
+
+  PullRequestObject *hit_obj = 0;
 };
 
 class LevelObject {
@@ -29,6 +31,8 @@ public:
   void move_viewport(int d_x, int d_y);
 
   ResolvedMovement resolve_collision(Rectangle &hitbox, int xvel, int yvel);
+
+  void update_collide(ResolvedMovement &res);
 
   bool initialized() { return _initialized; }
 
@@ -61,6 +65,7 @@ private:
   u16 bg1_vscroll = 0;
   u16 bg1_hscroll = 0;
 
+  uint score = 0;
   HudComponent hud;
 
   PullRequestObject *pullrequests;

@@ -82,7 +82,12 @@ void LevelObject::update(u16 &counter, PlayerInputComponent &input) {
     timerVal--;
     lastUpdate = counter;
   }
-  hud.update(timerVal, 0);
+  hud.update(timerVal, score);
+
+  if (counter % 3 == 0) {
+    bg0_vscroll += 1;
+    bg0_hscroll += 1;
+  }
 }
 
 void LevelObject::move_viewport(int d_x, int d_y) {
@@ -149,6 +154,13 @@ void LevelObject::move_viewport(int d_x, int d_y) {
   REG_BG1VOFS = bg0_vscroll;
   REG_BG2HOFS = bg1_hscroll;
   REG_BG2VOFS = bg1_vscroll;
+}
+
+void LevelObject::update_collide(ResolvedMovement &res) {
+  if (res.hit_obj != 0) {
+    res.hit_obj->set_active(false);
+    score++;
+  }
 }
 
 ResolvedMovement LevelObject::resolve_collision(Rectangle &hitbox, int xvel,
@@ -223,6 +235,15 @@ ResolvedMovement LevelObject::resolve_collision(Rectangle &hitbox, int xvel,
     }
 
     res.y_dist = ydist;
+  }
+
+  for (int i = 0; i < pr_count; i++) {
+    if (pullrequests[i].active()) {
+      if (pullrequests[i].position().collides(hitbox)) {
+        res.hit_obj = &pullrequests[i];
+        break;
+      }
+    }
   }
 
   return res;
