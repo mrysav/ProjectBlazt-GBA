@@ -7,6 +7,8 @@ void PullRequestObject::load(OBJATTR *spriteAttribs, int start_x, int start_y) {
 
   _position.set_x(start_x);
   _position.set_y(start_y);
+  _position.set_height(16);
+  _position.set_width(16);
 
   start_position.set_x(start_x);
   start_position.set_y(start_y);
@@ -19,8 +21,8 @@ void PullRequestObject::load(OBJATTR *spriteAttribs, int start_x, int start_y) {
 void PullRequestObject::update(u16 &counter) { sprite.animate(counter); }
 
 void PullRequestObject::move(int scroll_x, int scroll_y, Rectangle &viewport) {
-  _position.set_x(_position.get_x() + scroll_x);
-  _position.set_y(_position.get_y() + scroll_y);
+  _position.set_x(_position.x() + scroll_x);
+  _position.set_y(_position.y() + scroll_y);
 
   if (_active && start_position.x() < viewport.x() + viewport.width() + 17 &&
       start_position.x() > viewport.x() - 17 &&

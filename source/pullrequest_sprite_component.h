@@ -7,8 +7,8 @@
 
 class PullRequestSpriteComponent {
 public:
-  void load(OBJATTR *attribs, PositionComponent &PositionComponent);
-  void update(PositionComponent &position);
+  void load(OBJATTR *attribs, Rectangle &PositionComponent);
+  void update(Rectangle &position);
   void animate(u16 &counter);
   void hide();
 

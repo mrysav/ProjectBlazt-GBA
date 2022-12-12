@@ -66,17 +66,26 @@ void LevelObject::load(const u16 *pal, const int pal_len, const uint *tiles,
              width);
 
   hud.initialize();
-  hud.update(30, 1);
+  hud.update(5, 1);
 
   this->pullrequests = prs;
   this->pr_count = pr_count;
+
+  this->_failed = false;
 
   _initialized = true;
 }
 
 void LevelObject::update(u16 &counter, PlayerInputComponent &input) {
   static u16 lastUpdate = 0;
+
   uint timerVal = hud.timer();
+
+  if (timerVal == 0) {
+    _failed = true;
+    return;
+  }
+
   // running at about 60 fps
   if (counter - lastUpdate > 60) {
     timerVal--;
@@ -239,7 +248,9 @@ ResolvedMovement LevelObject::resolve_collision(Rectangle &hitbox, int xvel,
 
   for (int i = 0; i < pr_count; i++) {
     if (pullrequests[i].active()) {
-      if (pullrequests[i].position().collides(hitbox)) {
+      auto newHit = Rectangle(hitbox.x() + res.x_dist, hitbox.y() + res.y_dist,
+                              hitbox.width(), hitbox.height());
+      if (pullrequests[i].position().collides(newHit)) {
         res.hit_obj = &pullrequests[i];
         break;
       }

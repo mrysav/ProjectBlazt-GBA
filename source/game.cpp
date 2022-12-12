@@ -53,8 +53,8 @@ void GameState::load() {
 
   player.load(&oam_object_backbuffer[0]);
 
-  pull_requests[0].load(&oam_object_backbuffer[1], 2 * 16, 2 * 16);
-  pull_requests[1].load(&oam_object_backbuffer[2], 8 * 16, 2 * 16);
+  pull_requests[0].load(&oam_object_backbuffer[1], 8 * 16, 9 * 16);
+  pull_requests[1].load(&oam_object_backbuffer[2], 3 * 16, 29 * 16);
   pull_requests[2].load(&oam_object_backbuffer[3], 5 * 16, 14 * 16);
   pull_requests[3].load(&oam_object_backbuffer[4], 6 * 16, 29 * 16);
   pull_requests[4].load(&oam_object_backbuffer[5], 7 * 16, 22 * 16);
@@ -70,16 +70,32 @@ void GameState::load() {
 void GameState::unload() { clear_sprites(); }
 
 StateType GameState::update() {
+  static int failcounter = 0;
+
   input.update();
   level.update(counter, input);
-  player.update(counter, input, level);
 
-  for (int p = 0; p < 8; p++) {
-    pull_requests[p].update(counter);
+  if (level.failed()) {
+    failwait = true;
   }
 
-  for (int i = 0; i < 9; i++) {
-    OAM[i] = oam_object_backbuffer[i];
+  if (failwait) {
+    failcounter++;
+    if (failcounter >= 180) {
+      failwait = false;
+      failcounter = 0;
+      return MENU;
+    }
+  } else {
+    player.update(counter, input, level);
+
+    for (int p = 0; p < 8; p++) {
+      pull_requests[p].update(counter);
+    }
+
+    for (int i = 0; i < 9; i++) {
+      OAM[i] = oam_object_backbuffer[i];
+    }
   }
 
   counter++;

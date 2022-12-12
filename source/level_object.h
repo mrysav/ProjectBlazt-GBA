@@ -41,6 +41,8 @@ public:
   bool at_top_edge() { return _at_top_edge; }
   bool at_bottom_edge() { return _at_bottom_edge; }
 
+  bool &failed() { return this->_failed; }
+
 private:
   void init_backgrounds();
   void load_tile_palette(const u16 *pal, const int pal_len, const uint *tiles,
@@ -70,4 +72,6 @@ private:
 
   PullRequestObject *pullrequests;
   int pr_count = 0;
+
+  bool _failed = false;
 };

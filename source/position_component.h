@@ -2,6 +2,9 @@
 
 class PositionComponent {
 public:
+  PositionComponent(){};
+  PositionComponent(int _x, int _y) : x(_x), y(_y){};
+
   void set_x(int x);
   void set_y(int y);
 

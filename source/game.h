@@ -21,4 +21,6 @@ private:
   PullRequestObject pull_requests[32];
 
   u16 counter = 0;
+
+  bool failwait = false;
 };

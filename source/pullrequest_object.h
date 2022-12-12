@@ -17,7 +17,7 @@ private:
   PullRequestSpriteComponent sprite;
 
   // position on screen, in relation to the level
-  PositionComponent _position;
+  Rectangle _position;
 
   // initial starting position of the object
   // which is really the only logical position we care about

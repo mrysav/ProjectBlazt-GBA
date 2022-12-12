@@ -19,10 +19,9 @@ const int anim_seq[ANIM_SEQ_LEN] = {0, 1, 2, 3, 2, 1};
 // Sprite IDs + animations
 #define PR_NEUTRAL 64
 
-void PullRequestSpriteComponent::load(OBJATTR *attribs,
-                                      PositionComponent &position) {
-  _position = Rectangle(position.get_x(), position.get_y(), SPRITE_HEIGHT,
-                        SPRITE_WIDTH);
+void PullRequestSpriteComponent::load(OBJATTR *attribs, Rectangle &position) {
+  _position =
+      Rectangle(position.x(), position.y(), SPRITE_HEIGHT, SPRITE_WIDTH);
 
   spriteAttribs = attribs;
 
@@ -56,24 +55,24 @@ void PullRequestSpriteComponent::animate(u16 &counter) {
 
   spriteAttribs->attr2 = PR_NEUTRAL + (animFrame * 8);
 }
-void PullRequestSpriteComponent::update(PositionComponent &position) {
-  _position.set_x(position.get_x());
-  _position.set_y(position.get_y());
+void PullRequestSpriteComponent::update(Rectangle &position) {
+  _position.set_x(position.x());
+  _position.set_y(position.y());
 
   /* set up the first attribute */
-  spriteAttribs->attr0 = OBJ_Y(position.get_y()) | /* y coordinate */
-                         (0 << 8) |                /* rendering mode */
-                         (0 << 10) |               /* gfx mode */
-                         (0 << 12) |               /* mosaic */
-                         (1 << 13) |               /* color mode, 0:16, 1:256 */
-                         (OBJ_SQUARE);             /* shape */
+  spriteAttribs->attr0 = OBJ_Y(position.y()) | /* y coordinate */
+                         (0 << 8) |            /* rendering mode */
+                         (0 << 10) |           /* gfx mode */
+                         (0 << 12) |           /* mosaic */
+                         (1 << 13) |           /* color mode, 0:16, 1:256 */
+                         (OBJ_SQUARE);         /* shape */
 
   /* set up the second attribute */
-  spriteAttribs->attr1 = OBJ_X(position.get_x()) | /* x coordinate */
-                         (0 << 9) |                /* affine flag */
-                         (0 << 12) |               /* horizontal flip flag */
-                         (0 << 13) |               /* vertical flip flag */
-                         (ATTR1_SIZE_16);          /* size */
+  spriteAttribs->attr1 = OBJ_X(position.x()) | /* x coordinate */
+                         (0 << 9) |            /* affine flag */
+                         (0 << 12) |           /* horizontal flip flag */
+                         (0 << 13) |           /* vertical flip flag */
+                         (ATTR1_SIZE_16);      /* size */
 }
 
 void PullRequestSpriteComponent::hide() {
