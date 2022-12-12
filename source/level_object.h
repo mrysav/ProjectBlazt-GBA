@@ -1,8 +1,11 @@
 #pragma once
 
+#include <gba.h>
+
 #include "hud.h"
 #include "player_input_component.h"
 #include "position_component.h"
+#include "pullrequest_object.h"
 #include "rectangle.h"
 #include "util.h"
 
@@ -18,7 +21,8 @@ public:
 
   void load(const u16 *pal, const int pal_len, const uint *tiles,
             const int tiles_len, int height, int width, const u16 *meta_tiles,
-            const u16 *bg0, const u16 *bg1);
+            const u16 *bg0, const u16 *bg1, PullRequestObject *prs,
+            int pr_count);
 
   void update(u16 &counter, PlayerInputComponent &input);
 
@@ -58,4 +62,7 @@ private:
   u16 bg1_hscroll = 0;
 
   HudComponent hud;
+
+  PullRequestObject *pullrequests;
+  int pr_count = 0;
 };

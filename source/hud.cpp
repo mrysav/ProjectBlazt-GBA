@@ -26,7 +26,7 @@ void HudComponent::initialize() {
   load_tiles(this->base_screenblock, REG_BG2CNT, im_bg_basicMetaTiles, HUD_BG,
              HUD_HEIGHT, HUD_WIDTH);
 
-  REG_BG2CNT =
+  REG_BG0CNT =
       0 |                 /* priority, 0 is highest, 3 is lowest */
       (CHAR_BASE(0)) |    /* the char block the image data is stored in */
       (BG_256_COLOR) |    /* color mode, 0 is 16 colors, 1 is 256 colors */

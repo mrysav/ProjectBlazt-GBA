@@ -1,6 +1,6 @@
 #include <gba.h>
 
-#include "im_spr_dangerous_dave.h"
+#include "game_sprites.h"
 #include "player_sprite_component.h"
 
 // Spritesheet information
@@ -26,11 +26,6 @@ const int walk_seq[WALK_SEQ_LEN] = {0, 1, 0, -1};
 
 void PlayerSpriteComponent::load(OBJATTR *attribs,
                                  PositionComponent &position) {
-  // TODO: Support palette and gfx offsets for loading tiles in
-  dmaCopy(im_spr_dangerous_davePal, SPRITE_PALETTE,
-          im_spr_dangerous_davePalLen);
-  dmaCopy(im_spr_dangerous_daveTiles, SPRITE_GFX,
-          im_spr_dangerous_daveTilesLen);
 
   _position = Rectangle(position.get_x(), position.get_y(), PLAYER_SPRITE_WIDTH,
                         PLAYER_SPRITE_HEIGHT);

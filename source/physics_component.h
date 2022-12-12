@@ -1,5 +1,6 @@
 #pragma once
 
+#include "level_object.h"
 #include "player_input_component.h"
 #include "player_sprite_component.h"
 #include "position_component.h"

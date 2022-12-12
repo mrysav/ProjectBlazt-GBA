@@ -4,6 +4,8 @@
 #include "level_object.h"
 #include "util.h"
 
+#include "pullrequest_object.h"
+
 #define TILE_WIDTH 16
 #define TILE_HEIGHT 16
 
@@ -20,7 +22,7 @@ void LevelObject::init_backgrounds() {
   // TODO: specify char and screen blocks
 
   /* set all control the bits in this register */
-  REG_BG0CNT =
+  REG_BG1CNT =
       2 |                /* priority, 0 is highest, 3 is lowest */
       (CHAR_BASE(0)) |   /* the char block the image data is stored in */
       (BG_MOSAIC) |      /* the mosaic flag */
@@ -29,22 +31,23 @@ void LevelObject::init_backgrounds() {
       (BG_WRAP) |        /* wrapping flag */
       (BG_SIZE_3);       /* bg size 3 is 512x512 */
 
-  REG_BG1CNT =
+  REG_BG2CNT =
       1 |                /* priority, 0 is highest, 3 is lowest */
       (CHAR_BASE(0)) |   /* the char block the image data is stored in */
       (BG_MOSAIC) |      /* the mosaic flag */
       (BG_256_COLOR) |   /* color mode, 0 is 16 colors, 1 is 256 colors */
       (SCREEN_BASE(8)) | /* the screen block the tile data is stored in */
-      (BG_WRAP) |        /* wrapping flag */
-      (BG_SIZE_3);       /* bg size 3 is 512x512 */
+      // (BG_WRAP) |        /* wrapping flag */
+      (BG_SIZE_3); /* bg size 3 is 512x512 */
 
-  // Set the right display mode - all three backgrounds
+  // Set the right display mode - all three backgrounds are regular backgrounds
   REG_DISPCNT = MODE_0 | BG0_ON | BG1_ON | BG2_ON | OBJ_ON | OBJ_1D_MAP;
 }
 
 void LevelObject::load(const u16 *pal, const int pal_len, const uint *tiles,
                        const int tiles_len, int height, int width,
-                       const u16 *meta_tiles, const u16 *bg0, const u16 *bg1) {
+                       const u16 *meta_tiles, const u16 *bg0, const u16 *bg1,
+                       PullRequestObject *prs, int pr_count) {
 
   init_backgrounds();
 
@@ -57,13 +60,16 @@ void LevelObject::load(const u16 *pal, const int pal_len, const uint *tiles,
   this->bg0 = bg0;
   this->bg1 = bg1;
 
-  load_tiles((u16 *)SCREEN_BASE_BLOCK(4), REG_BG0CNT, meta_tiles, bg0, height,
+  load_tiles((u16 *)SCREEN_BASE_BLOCK(4), REG_BG1CNT, meta_tiles, bg0, height,
              width);
-  load_tiles((u16 *)SCREEN_BASE_BLOCK(8), REG_BG1CNT, meta_tiles, bg1, height,
+  load_tiles((u16 *)SCREEN_BASE_BLOCK(8), REG_BG2CNT, meta_tiles, bg1, height,
              width);
 
   hud.initialize();
   hud.update(30, 1);
+
+  this->pullrequests = prs;
+  this->pr_count = pr_count;
 
   _initialized = true;
 }
@@ -135,10 +141,14 @@ void LevelObject::move_viewport(int d_x, int d_y) {
     bg1_vscroll += diff_y;
   }
 
-  REG_BG0HOFS = bg0_hscroll;
-  REG_BG0VOFS = bg0_vscroll;
-  REG_BG1HOFS = bg1_hscroll;
-  REG_BG1VOFS = bg1_vscroll;
+  for (int i = 0; i < pr_count; i++) {
+    pullrequests[i].move(-diff_x, -diff_y, viewport);
+  }
+
+  REG_BG1HOFS = bg0_hscroll;
+  REG_BG1VOFS = bg0_vscroll;
+  REG_BG2HOFS = bg1_hscroll;
+  REG_BG2VOFS = bg1_vscroll;
 }
 
 ResolvedMovement LevelObject::resolve_collision(Rectangle &hitbox, int xvel,

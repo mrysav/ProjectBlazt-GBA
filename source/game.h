@@ -18,5 +18,7 @@ private:
   PlayerObject player;
   LevelObject level;
 
+  PullRequestObject pull_requests[32];
+
   u16 counter = 0;
 };
