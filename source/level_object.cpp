@@ -66,7 +66,7 @@ void LevelObject::load(const u16 *pal, const int pal_len, const uint *tiles,
              width);
 
   hud.initialize();
-  hud.update(5, 1);
+  hud.update(30, 1);
 
   this->pullrequests = prs;
   this->pr_count = pr_count;
